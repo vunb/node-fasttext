@@ -1,0 +1,45 @@
+{
+  "name": "fasttext",
+  "version": "0.1.0",
+  "description": "A nodejs binding for fasttext representation and classification",
+  "main": "index.js",
+  "scripts": {
+    "config": "node-pre-gyp configure",
+    "build": "node-pre-gyp build",
+    "preinstall": "npm install node-pre-gyp node-gyp",
+    "postinstall": "node-pre-gyp install --fallback-to-build",
+    "test": "tape test/start.js | tap-spec",
+    "buildtest": "set PYTHON=C:\\Python27\\python.exe&& npm run config && npm run build && npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vunb/node-fasttext.git"
+  },
+  "keywords": [
+    "vntk",
+    "fasttext",
+    "node-fasttext"
+  ],
+  "author": "vunb",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vunb/node-fasttext/issues"
+  },
+  "homepage": "https://github.com/vunb/node-fasttext#readme",
+  "binary": {
+    "module_name": "fasttext",
+    "module_path": "./lib/binding/",
+    "host": "https://github.com/vunb/node-fasttext/releases/download/",
+    "remote_path": "{version}"
+  },
+  "dependencies": {
+    "nan": "2.7.0",
+    "node-gyp": "3.6.2",
+    "node-pre-gyp-github": "1.3.1",
+    "node-pre-gyp": "0.6.38"
+  },
+  "devDependencies": {
+    "tap-spec": "^4.1.1",
+    "tape": "^4.6.0"
+  }
+}
