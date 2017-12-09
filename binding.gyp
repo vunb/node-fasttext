@@ -33,9 +33,12 @@
       "cflags": [
           "-std=c++11",
           "-pthread",
-          "-Wsign-compare",
           "-fexceptions",
-          "-O0"
+          "-O3",
+          "-Wall",
+          "-pedantic",
+          "-DUSE_SSE",
+          "-DUSE_SSE2"
       ],
       "conditions": [
           [ 'OS!="win"', {
@@ -44,9 +47,15 @@
               "cflags_cc+": [ "-std=c++11", "-fexceptions" ],
           }],
           [ 'OS=="mac"', {
+              "cflags+": [ "-stdlib=libc++" ],
               "xcode_settings": {
-                  "GCC_ENABLE_CPP_EXCEPTIONS": "YES"
-              }
+                  "OTHER_CPLUSPLUSFLAGS" : [ "-std=c++11", "-stdlib=libc++", "-pthread" ],
+                  "OTHER_LDFLAGS": [ "-stdlib=libc++" ],
+                  "GCC_ENABLE_CPP_EXCEPTIONS": "YES",
+                  "MACOSX_DEPLOYMENT_TARGET": "10.7",
+                  "CLANG_CXX_LANGUAGE_STANDARD":"c++11",
+                  "CLANG_CXX_LIBRARY": "libc++"
+              },
           }]
       ]
     },
