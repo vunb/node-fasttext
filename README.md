@@ -10,6 +10,9 @@ Nodejs binding for fasttext representation and classification.
 
 > This is a link to the Facebook [fastText](https://github.com/facebookresearch/fastText). A Library for efficient text classification and representation learning.
 
+* FASTTEXT_VERSION = 12;
+* FASTTEXT_FILEFORMAT_MAGIC_INT32 = 793712314;
+
 # Installation
 
 Using npm:
@@ -38,6 +41,24 @@ classifier.predict('Why not put knives in the dishwasher?', 5, (err, res) => {
         console.log('No matches');
     }
 });
+```
+
+Before we haved trained model to use the followings params:
+
+```bash
+# Training
+~/fastText/data$ ./fasttext supervised -input cooking.train -output model_cooking -lr 1.0 -epoch 25 -wordNgrams 2 -bucket 200000 -dim 50 -loss hs
+Read 0M words
+Number of words:  8952
+Number of labels: 735
+Progress: 100.0%  words/sec/thread: 1687554  lr: 0.000000  loss: 5.247591  eta: 0h0m 4m
+
+# Testing
+~/fastText/data$ ./fasttext test model_cooking.bin cooking.valid
+N       3000
+P@1     0.587
+R@1     0.254
+Number of examples: 3000
 ```
 
 # Contributing
