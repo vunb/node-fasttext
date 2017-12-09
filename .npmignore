@@ -1,6 +1,7 @@
 fasttext.node
 test.js
 examples
+.vscode
 build
 docs
 test
