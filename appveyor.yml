@@ -1,0 +1,52 @@
+os: unstable
+environment:
+  NODE_PRE_GYP_GITHUB_TOKEN:
+    secure: ccYzaN4TslxESt7ITv1pVGLqtVEDzTAZwIEY0jxc3tjvRzZrzGm5V8pJPdgknlLZ
+
+  matrix:
+  - nodejs_version: "4"
+  - nodejs_version: "5"
+  - nodejs_version: "6"
+  - nodejs_version: "7"
+  - nodejs_version: "8"
+  - nodejs_version: "9"
+  
+platform:
+  - x64
+  - x86
+  
+# Install scripts. (runs after repo cloning)
+install:
+  # Get the latest stable version of Node.js or io.js
+  - ps: Install-Product node $env:nodejs_version $env:platform
+  - set PATH=%APPDATA%\npm;%PATH%
+  # install submodules
+  - git submodule update --init
+  # install modules
+  - npm install -g node-gyp node-pre-gyp node-pre-gyp-github
+  - npm install
+  # Check if we're building the latest tag, if so
+  # then we publish the binaries if tests pass.
+  - ps: >
+      if ($env:APPVEYOR_REPO_COMMIT_MESSAGE.ToLower().Contains('[publish binary]') -OR $(git describe --tags --always HEAD) -eq $env:APPVEYOR_REPO_BRANCH) {
+        $env:publish_binary = "true";
+      }
+      if ($env:publish_binary -eq "true") {
+        "We're publishing a binary!" | Write-Host
+      } else {
+        "We're not publishing a binary" | Write-Host
+      }
+      true;
+
+# Post-install test scripts.
+test_script:
+  # Output useful info for debugging.
+  - node --version
+  - npm --version
+  # run tests
+  - npm test
+  # publish binary
+  - ps: if ($env:publish_binary -eq "true") { node-pre-gyp package; node-pre-gyp-github publish --release }
+
+# Don't actually build.
+build: off
