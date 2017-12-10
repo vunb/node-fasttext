@@ -61,6 +61,31 @@ R@1     0.254
 Number of examples: 3000
 ```
 
+# Nearest neighbor
+
+Simple class for searching nearest neighbors:
+
+```js
+const path = require('path');
+const fastText = require('fasttext');
+
+const model = path.resolve(__dirname, './skipgram.bin');
+const query = new fastText.Query(model);
+
+query.nn('word', 5, (err, res) => {
+    if (err) {
+        console.error(err);
+    } else if (res.length > 0) {
+        let tag = res[0].label; // letter
+        let confidence = res[0].value // 0.99992
+        console.log('Nearest neighbor', tag, confidence, res);
+    } else {
+        console.log('No matches');
+    }
+});
+```
+
+
 # Contributing
 
 Pull requests and stars are highly welcome.
