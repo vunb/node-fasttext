@@ -8,7 +8,8 @@
 #include <atomic>
 #include <memory>
 #include <set>
-#include  <mutex>
+#include <map>
+#include <mutex>
 
 #include "../fastText/src/fasttext.h"
 
@@ -48,7 +49,7 @@ class Wrapper {
         std::vector<PredictResult> findNN(const Vector&, int32_t,
                     const std::set<std::string>&);
 
-        void loadModel(std::istream&);
+        std::map<std::string, std::string> loadModel(std::istream&);
 
         bool quant_;
         std::string modelFilename_;
@@ -57,6 +58,11 @@ class Wrapper {
 
         bool isLoaded_;
         bool isPrecomputed_;
+
+        bool isModelLoaded(){ return isLoaded_; }
+        bool fileExist(const std::string& filename);
+        std::map<std::string, std::string> getModelInfo();
+
     public:
         Wrapper(std::string modelFilename);
 
@@ -64,9 +70,12 @@ class Wrapper {
 
         std::vector<PredictResult> predict(std::string sentence, int32_t k);
         std::vector<PredictResult> nn(std::string query, int32_t k);
+        std::map<std::string, std::string> train(const std::vector<std::string> args);
+
 
         void precomputeWordVectors();
-        void loadModel();
+        std::map<std::string, std::string> loadModel();
+        std::map<std::string, std::string> loadModel(std::string filename);
 
 };
 

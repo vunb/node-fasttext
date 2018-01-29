@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "config": "node-pre-gyp configure",
-    "build": "node-pre-gyp build",
+    "build": "node-pre-gyp configure && node-pre-gyp build",
     "preinstall": "npm install node-pre-gyp node-gyp",
     "postinstall": "node-pre-gyp install --fallback-to-build",
     "test": "tape test/start.js | tap-spec",

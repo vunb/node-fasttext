@@ -22,6 +22,8 @@
         "fastText/src/utils.h",
         "fastText/src/vector.cc",
         "fastText/src/vector.h",
+        "src/node-argument.cc",
+        "src/loadModel.cc",
         "src/classifier.h",
         "src/classifierWorker.cc",
         "src/query.h",

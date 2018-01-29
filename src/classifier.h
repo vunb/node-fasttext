@@ -5,7 +5,9 @@
 #include <node.h>
 #include <node_object_wrap.h>
 #include "wrapper.h"
+#include "node-argument.h"
 #include "classifierWorker.h"
+#include "loadModel.h"
 
 class Classifier : public Nan::ObjectWrap {
     public:
@@ -15,6 +17,7 @@ class Classifier : public Nan::ObjectWrap {
             tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
             Nan::SetPrototypeMethod(tpl, "predict", Predict);
+            Nan::SetPrototypeMethod(tpl, "loadModel", loadModel);
 
             constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
             Nan::Set(target, Nan::New("Classifier").ToLocalChecked(),
@@ -30,13 +33,14 @@ class Classifier : public Nan::ObjectWrap {
 
         static NAN_METHOD(New) {
             if (info.IsConstructCall()) {
+                std::string command;
                 if (!info[0]->IsString()) {
-                    Nan::ThrowError("First argument must be a string");
-                    return;
+                     command = "model.bin";
+                } else {
+                    v8::String::Utf8Value commandArg(info[0]->ToString());
+                    command = std::string(*commandArg);
                 }
 
-                v8::String::Utf8Value commandArg(info[0]->ToString());
-                std::string command = std::string(*commandArg);
 
                 Classifier *obj = new Classifier(command);
                 obj->Wrap(info.This());
@@ -49,6 +53,23 @@ class Classifier : public Nan::ObjectWrap {
             }
         }
 
+        static NAN_METHOD(loadModel) {
+
+        	if (!info[0]->IsString()) {
+                Nan::ThrowError("model file path must be a string");
+                return;
+            } 
+
+        	v8::String::Utf8Value modelArg(info[0]->ToString());
+        	std::string filename = std::string(*modelArg);
+        	Classifier* obj = Nan::ObjectWrap::Unwrap<Classifier>( info.Holder() );
+
+            auto worker = new LoadModel(filename, obj->wrapper_);
+            auto resolver = v8::Promise::Resolver::New( info.GetIsolate());
+            worker->SaveToPersistent("key",resolver);
+            info.GetReturnValue().Set(resolver->GetPromise());
+            Nan::AsyncQueueWorker( worker );
+        }
 
         static NAN_METHOD(Predict) {
             if (!info[0]->IsString()) {

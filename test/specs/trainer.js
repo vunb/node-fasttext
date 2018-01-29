@@ -8,7 +8,7 @@ test('fastText trainer', function (t) {
 
     let data = path.resolve(path.join(__dirname, '../data/cooking.train.txt'));
     let model = path.resolve(path.join(__dirname, '../data/cooking.model'));
-    let trainer = new fastText.Trainer();
+    let classifier = new fastText.Classifier();
     let options = {
         input: data,
         output: model,
@@ -17,7 +17,7 @@ test('fastText trainer', function (t) {
         bucket: 2000000
     }
 
-    trainer.train('supervised', options)
+    classifier.train('supervised', options)
         .then((res) => {
             t.equal(res.dim, 100, 'dim')
         });

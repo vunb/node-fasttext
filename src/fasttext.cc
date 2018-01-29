@@ -8,4 +8,4 @@ NAN_MODULE_INIT(Init) {
   Query::Init(target);
 }
 
-NODE_MODULE(myaddon, Init)
+NODE_MODULE(fastTextAddon, Init)
