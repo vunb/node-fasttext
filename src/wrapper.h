@@ -13,6 +13,7 @@
 
 #include "../fastText/src/fasttext.h"
 
+using fasttext::FastText;
 using fasttext::Args;
 using fasttext::Dictionary;
 using fasttext::Matrix;
@@ -39,6 +40,7 @@ class Wrapper {
 
         std::shared_ptr<Model> model_;
         Matrix wordVectors_;
+        FastText fastText_;
 
         // std::atomic<int64_t> tokenCount;
         // clock_t start;

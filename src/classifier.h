@@ -8,6 +8,7 @@
 #include "node-argument.h"
 #include "classifierWorker.h"
 #include "loadModel.h"
+#include "train.h"
 
 class Classifier : public Nan::ObjectWrap {
     public:
@@ -16,6 +17,7 @@ class Classifier : public Nan::ObjectWrap {
             tpl->SetClassName(Nan::New("Classifier").ToLocalChecked());
             tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
+            Nan::SetPrototypeMethod(tpl, "train", train);
             Nan::SetPrototypeMethod(tpl, "predict", Predict);
             Nan::SetPrototypeMethod(tpl, "loadModel", loadModel);
 
@@ -95,6 +97,66 @@ class Classifier : public Nan::ObjectWrap {
             Classifier* obj = Nan::ObjectWrap::Unwrap<Classifier>(info.Holder());
 
             Nan::AsyncQueueWorker(new ClassifierWorker(callback, sentence, k, obj->wrapper_));
+        }
+
+        static NAN_METHOD(train) {
+
+           if (!info[0]->IsString()) {
+                Nan::ThrowError("type argument must be a string.");
+                return;
+            }
+
+            if (!info[1]->IsObject()) {
+                Nan::ThrowError("options argument must be an object.");
+                return;
+            }
+            
+            v8::String::Utf8Value commandArg(info[0]->ToString());
+            v8::String::Utf8Value commandConf(info[1]->ToString());
+            std::string command = std::string(*commandArg);
+            std::string conf = std::string(*commandConf);
+
+
+            if (command == "skipgram" || command == "cbow" || command == "supervised") {
+
+                v8::Local<v8::Object> confObj = v8::Local<v8::Object>::Cast( info[1] );
+
+                NodeArgument::NodeArgument nodeArg;
+                NodeArgument::CArgument c_argument;
+
+                try {
+                    c_argument = nodeArg.ObjectToCArgument( confObj );
+                } catch (std::string errorMessage) {
+                    Nan::ThrowError(errorMessage.c_str());
+                    return;
+                }
+
+                int count = c_argument.argc;
+                char** argument = c_argument.argv;
+                std::cout << "Input train <<<<<" << count << argument[0] << std::endl;
+
+                char *emptyString = (char *)"-command";
+                char *argv[count + 2];
+                int argc = count + 2; // increment the argc
+
+                for(int j = 0; j < count; j++) {
+                    argv[j + 2] = argument[j];
+                }
+
+                argv[0] = emptyString;
+                argv[1] = (char *) command.c_str();
+                Classifier* obj = Nan::ObjectWrap::Unwrap<Classifier>(info.Holder());
+                std::vector<std::string> args(argv, argv + argc);
+
+                auto worker = new Train(args, obj->wrapper_);
+                auto resolver = v8::Promise::Resolver::New(info.GetIsolate());
+                worker->SaveToPersistent("key", resolver);
+                info.GetReturnValue().Set(resolver->GetPromise());
+                Nan::AsyncQueueWorker( worker );
+            } else {
+                Nan::ThrowError("Permitted command type is ['skipgram', 'cbow', 'supervised'].");
+                return;
+            }
         }
 
         static inline Nan::Persistent<v8::Function> & constructor() {

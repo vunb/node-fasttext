@@ -248,7 +248,7 @@ std::vector<PredictResult> Wrapper::nn(std::string query, int32_t k) {
     return findNN(queryVec, k, banSet);
 }
 
-std::vector<PredictResult> Wrapper::predict (std::string sentence, int32_t k) {
+std::vector<PredictResult> Wrapper::predict(std::string sentence, int32_t k) {
 
     std::vector<PredictResult> arr;
     std::vector<int32_t> words, labels;
@@ -276,3 +276,22 @@ std::vector<PredictResult> Wrapper::predict (std::string sentence, int32_t k) {
 
     return arr;
 }
+
+std::map<std::string, std::string> Wrapper::train(const std::vector<std::string> args) {
+	std::shared_ptr<Args> a = std::make_shared<Args>();
+	a->parseArgs(args);
+
+	std::string inputFilename = a->input;
+	if ( !fileExist(inputFilename) ) {
+		throw "Input file is not exist.";
+	}
+
+	std::cout << "Input <<<<<" << a->input << std::endl;
+  	std::cout << "Output >>>>>" << a->output + ".bin" << std::endl;
+
+    // FastText ftx;
+	// ftx.train(a);
+    fastText_.train(a);
+	return loadModel(a->output + ".bin");
+}
+
