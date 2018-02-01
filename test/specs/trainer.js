@@ -19,6 +19,7 @@ test('fastText trainer', function (t) {
 
     classifier.train('supervised', options)
         .then((res) => {
-            t.equal(res.dim, 100, 'dim')
+            console.log('model info after training:', res)
+            t.equal(res.dim, 200, 'dim')
         });
 })

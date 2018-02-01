@@ -286,8 +286,8 @@ std::map<std::string, std::string> Wrapper::train(const std::vector<std::string>
 		throw "Input file is not exist.";
 	}
 
-	std::cout << "Input <<<<<" << a->input << std::endl;
-  	std::cout << "Output >>>>>" << a->output + ".bin" << std::endl;
+	std::cout << "Input  <<<<< " << a->input << std::endl;
+  	std::cout << "Output >>>>> " << a->output + ".bin" << std::endl;
 
     fastText_.train(a);
     fastText_.saveModel();
