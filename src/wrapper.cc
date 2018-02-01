@@ -289,9 +289,9 @@ std::map<std::string, std::string> Wrapper::train(const std::vector<std::string>
 	std::cout << "Input <<<<<" << a->input << std::endl;
   	std::cout << "Output >>>>>" << a->output + ".bin" << std::endl;
 
-    // FastText ftx;
-	// ftx.train(a);
     fastText_.train(a);
+    fastText_.saveModel();
+    fastText_.saveVectors();
 	return loadModel(a->output + ".bin");
 }
 
