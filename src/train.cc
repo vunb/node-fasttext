@@ -7,6 +7,11 @@ void Train::Execute () {
         result_ = wrapper_->train( args_ );
     } catch (std::string errorMessage) {
         SetErrorMessage(errorMessage.c_str());
+    } catch (const char * str) {
+        std::cout << "Exception: " << str << std::endl;
+    } catch(const std::exception& e) {
+	    // Handle exception
+        std::cout << "Exception: " << e.what() << std::endl;
     }
 }
 
