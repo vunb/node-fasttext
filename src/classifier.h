@@ -133,20 +133,21 @@ class Classifier : public Nan::ObjectWrap {
 
                 int count = c_argument.argc;
                 char** argument = c_argument.argv;
-                std::cout << "Input train <<<<<" << count << argument[0] << std::endl;
-
-                char *emptyString = (char *)"-command";
-                char *argv[count + 2];
-                int argc = count + 2; // increment the argc
+            
+                std::vector<std::string> args;
+                args.push_back("-command");
+                args.push_back(command.c_str());
 
                 for(int j = 0; j < count; j++) {
-                    argv[j + 2] = argument[j];
+                    args.push_back(argument[j]);
                 }
 
-                argv[0] = emptyString;
-                argv[1] = (char *) command.c_str();
+                // std::cout << "Args <<<<< Params" << std::endl;
+                // for (std::string& a : args) {
+                //     std::cout << "Args:" << a << std::endl;
+                // }
+
                 Classifier* obj = Nan::ObjectWrap::Unwrap<Classifier>(info.Holder());
-                std::vector<std::string> args(argv, argv + argc);
 
                 auto worker = new Train(args, obj->wrapper_);
                 auto resolver = v8::Promise::Resolver::New(info.GetIsolate());
