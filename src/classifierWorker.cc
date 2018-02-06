@@ -1,7 +1,5 @@
-
-
+#include <iostream>
 #include "classifierWorker.h"
-#include <v8.h>
 
 void ClassifierWorker::Execute () {
     try {
@@ -9,6 +7,12 @@ void ClassifierWorker::Execute () {
         result_ = wrapper_->predict(sentence_, k_);
     } catch (std::string errorMessage) {
         SetErrorMessage(errorMessage.c_str());
+    } catch (const char * str) {
+        std::cout << "Exception: " << str << std::endl;
+        SetErrorMessage(str);
+    } catch(const std::exception& e) {
+        std::cout << "Exception: " << e.what() << std::endl;
+        SetErrorMessage(e.what());
     }
 }
 
@@ -16,12 +20,9 @@ void ClassifierWorker::Execute () {
 void ClassifierWorker::HandleErrorCallback () {
     Nan::HandleScope scope;
 
-    v8::Local<v8::Value> argv[] = {
-        Nan::Error(ErrorMessage()),
-        Nan::Null()
-    };
-
-    callback->Call(2, argv);
+    auto res =  GetFromPersistent("key").As<v8::Promise::Resolver>();
+    res->Reject( Nan::GetCurrentContext() , Nan::Error(ErrorMessage()));
+    v8::Isolate::GetCurrent()->RunMicrotasks();
 }
 
 void ClassifierWorker::HandleOKCallback () {
@@ -44,10 +45,8 @@ void ClassifierWorker::HandleOKCallback () {
         result->Set(i, returnObject);
     }
 
-    v8::Local<v8::Value> argv[] = {
-        Nan::Null(),
-        result
-    };
-
-    callback->Call(2, argv);
+    // promise resolver
+    auto res =  GetFromPersistent("key").As<v8::Promise::Resolver>();
+    res->Resolve( Nan::GetCurrentContext() , result);
+    v8::Isolate::GetCurrent()->RunMicrotasks();
 }

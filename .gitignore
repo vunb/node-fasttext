@@ -59,5 +59,7 @@ typings/
 
 .vscode
 build
+build1*
+data
 fasttext.node
 test.js

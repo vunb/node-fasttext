@@ -30,20 +30,46 @@ const fastText = require('fasttext');
 const model = path.resolve(__dirname, './model_cooking.bin');
 const classifier = new fastText.Classifier(model);
 
-classifier.predict('Why not put knives in the dishwasher?', 5, (err, res) => {
-    if (err) {
-        console.error(err);
-    } else if (res.length > 0) {
-        let tag = res[0].label; // __label__knives
-        let confidence = res[0].value // 0.8787146210670471
-        console.log('classify', tag, confidence, res);
-    } else {
-        console.log('No matches');
-    }
-});
+classifier.predict('Why not put knives in the dishwasher?', 5)
+    .then((res) => {
+        if (res.length > 0) {
+            let tag = res[0].label; // __label__knives
+            let confidence = res[0].value // 0.8787146210670471
+            console.log('classify', tag, confidence, res);
+        } else {
+            console.log('No matches');
+        }
+    });
 ```
 
-Before we haved trained model to use the followings params:
+The model haved trained before with the followings params:
+
+```js
+const path = require('path');
+const fastText = require('fasttext');
+
+let data = path.resolve(path.join(__dirname, '../data/cooking.train.txt'));
+let model = path.resolve(path.join(__dirname, '../data/cooking.model'));
+
+let classifier = new fastText.Classifier();
+let options = {
+    input: data,
+    output: model,
+    loss: "softmax",
+    dim: 200,
+    bucket: 2000000
+}
+
+classifier.train('supervised', options)
+    .then((res) => {
+        console.log('model info after training:', res)
+        // Input  <<<<< C:\projects\node-fasttext\test\data\cooking.train.txt
+        // Output >>>>> C:\projects\node-fasttext\test\data\cooking.model.bin
+        // Output >>>>> C:\projects\node-fasttext\test\data\cooking.model.vec
+    });
+```
+
+Or you can train directly from the command line with fasttext builded from official source:
 
 ```bash
 # Training
@@ -85,6 +111,20 @@ query.nn('word', 5, (err, res) => {
 });
 ```
 
+# Build from source
+
+See [Installation Prerequisites](https://github.com/nodejs/node-gyp#installation).
+
+```bash
+# install dependencies and tools
+npm install
+
+# build node-fasttext from source
+npm run build
+
+# run unit-test
+npm test
+```
 
 # Contributing
 
