@@ -4,8 +4,8 @@
   "description": "A nodejs binding for fasttext representation and classification",
   "main": "index.js",
   "scripts": {
-    "config": "node-pre-gyp configure",
-    "build": "node-pre-gyp configure && node-pre-gyp rebuild",
+    "config": "node-pre-gyp configure --msvs_version=2015",
+    "build": "node-pre-gyp rebuild",
     "preinstall": "npm install node-pre-gyp node-gyp",
     "postinstall": "node-pre-gyp install --fallback-to-build",
     "test": "tape test/start.js | tap-spec",

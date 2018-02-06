@@ -85,6 +85,20 @@ query.nn('word', 5, (err, res) => {
 });
 ```
 
+# Build from source
+
+See [Installation Prerequisites](https://github.com/nodejs/node-gyp#installation).
+
+```bash
+# install dependencies and tools
+npm install
+
+# build node-fasttext from source
+npm run build
+
+# run unit-test
+npm test
+```
 
 # Contributing
 
