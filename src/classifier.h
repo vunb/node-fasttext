@@ -18,7 +18,7 @@ class Classifier : public Nan::ObjectWrap {
             tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
             Nan::SetPrototypeMethod(tpl, "train", train);
-            Nan::SetPrototypeMethod(tpl, "predict", Predict);
+            Nan::SetPrototypeMethod(tpl, "predict", predict);
             Nan::SetPrototypeMethod(tpl, "loadModel", loadModel);
 
             constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
@@ -73,30 +73,27 @@ class Classifier : public Nan::ObjectWrap {
             Nan::AsyncQueueWorker( worker );
         }
 
-        static NAN_METHOD(Predict) {
+        static NAN_METHOD(predict) {
             if (!info[0]->IsString()) {
                 Nan::ThrowError("sentence must be a string");
                 return;
             }
 
-            if (!info[1]->IsUint32()) {
-                Nan::ThrowError("k must be a number");
-                return;
+            int32_t k = 1;
+            if (info[1]->IsUint32()) {
+                k = info[1]->Uint32Value();
             }
 
-            if (!info[2]->IsFunction()) {
-                Nan::ThrowError("callback must be a function");
-                return;
-            }
-
-            int32_t k = info[1]->Uint32Value();
             v8::String::Utf8Value sentenceArg(info[0]->ToString());
             std::string sentence = std::string(*sentenceArg);
-            Nan::Callback *callback = new Nan::Callback(info[2].As<v8::Function>());
 
             Classifier* obj = Nan::ObjectWrap::Unwrap<Classifier>(info.Holder());
 
-            Nan::AsyncQueueWorker(new ClassifierWorker(callback, sentence, k, obj->wrapper_));
+            auto worker = new ClassifierWorker(sentence, k, obj->wrapper_);
+            auto resolver = v8::Promise::Resolver::New(info.GetIsolate());
+            worker->SaveToPersistent("key", resolver);
+            info.GetReturnValue().Set(resolver->GetPromise());
+            Nan::AsyncQueueWorker(worker);
         }
 
         static NAN_METHOD(train) {
@@ -153,7 +150,7 @@ class Classifier : public Nan::ObjectWrap {
                 auto resolver = v8::Promise::Resolver::New(info.GetIsolate());
                 worker->SaveToPersistent("key", resolver);
                 info.GetReturnValue().Set(resolver->GetPromise());
-                Nan::AsyncQueueWorker( worker );
+                Nan::AsyncQueueWorker(worker);
             } else {
                 Nan::ThrowError("Permitted command type is ['skipgram', 'cbow', 'supervised'].");
                 return;

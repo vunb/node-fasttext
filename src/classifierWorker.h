@@ -7,12 +7,12 @@
 
 class ClassifierWorker : public Nan::AsyncWorker {
     public:
-        ClassifierWorker (Nan::Callback *callback, std::string sentence, int32_t k, Wrapper *wrapper)
-            : Nan::AsyncWorker(callback),
-                sentence_(sentence),
-                wrapper_(wrapper),
-                result_(),
-                k_(k) {};
+        ClassifierWorker (std::string sentence, int32_t k, Wrapper *wrapper):
+            Nan::AsyncWorker(new Nan::Callback()),
+            sentence_(sentence),
+            wrapper_(wrapper),
+            result_(),
+            k_(k) {};
 
         ~ClassifierWorker () {};
 

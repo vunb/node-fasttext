@@ -18,7 +18,7 @@ class Train : public Nan::AsyncWorker {
         void HandleOKCallback ();
         void HandleErrorCallback ();
 
-    private : 
+    private: 
     	const std::vector<std::string> args_;
     	Wrapper *wrapper_;
     	std::map<std::string, std::string> result_;
