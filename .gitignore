@@ -61,5 +61,6 @@ typings/
 build
 build1*
 data
+pretrained-vectors
 fasttext.node
-test.js
+test*.js
