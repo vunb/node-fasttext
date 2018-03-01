@@ -23,3 +23,24 @@ test('fastText trainer', function (t) {
             t.equal(res.dim, 200, 'dim')
         });
 })
+
+test('fastText quantize', function (t) {
+    t.plan(1)
+    let input = path.resolve(path.join(__dirname, '../data/cooking.train.txt'));
+    let output = path.resolve(path.join(__dirname, '../data/cooking.model'));
+    let classifier = new fastText.Classifier();
+    let options = {
+        input, output,
+        epoch: 1,
+        qnorm: true,
+        qout: true,
+        retrain: true,
+        cutoff: 1000,
+    };
+
+    classifier.train('quantize', options)
+        .then((res) => {console.log(res)})
+        .catch((e) => {console.error(e)});
+    
+    t.ok(true);
+})

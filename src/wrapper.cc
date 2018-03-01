@@ -183,6 +183,13 @@ std::map<std::string, std::string> Wrapper::getModelInfo() {
 	response["verbose"] = std::to_string( args_->verbose );
 	response["pretrainedVectors"] = args_->pretrainedVectors;
 
+    // `-quantize` arguments
+    response["cutoff"] = std::to_string(args_->cutoff);
+    response["dsub"] = std::to_string(args_->dsub);
+    response["qnorm"] = std::to_string(args_->qnorm);
+    response["qout"] = std::to_string(args_->qout);
+    response["retrain"] = std::to_string(args_->retrain);
+
 	return response;
 }
 
@@ -295,3 +302,21 @@ std::map<std::string, std::string> Wrapper::train(const std::vector<std::string>
 	return loadModel(a->output + ".bin");
 }
 
+std::map<std::string, std::string> Wrapper::quantize(const std::vector<std::string> args) {
+	std::shared_ptr<Args> a = std::make_shared<Args>();
+	a->parseArgs(args);
+
+	if ( !fileExist(a->input) ) {
+		throw "Input file is not exist.";
+	}
+
+    std::cout << "Input: " << a->input << std::endl;
+    std::cout << "Model: " << a->output + ".bin" << std::endl;
+    std::cout << "Quantized: " << a->output + ".ftz" << std::endl;
+
+    // parseArgs checks if a->output is given.
+    fastText_.loadModel(a->output + ".bin");
+    fastText_.quantize(a);
+    fastText_.saveModel();
+    return loadModel(a->output + ".ftz");
+}

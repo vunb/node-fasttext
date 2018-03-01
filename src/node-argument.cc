@@ -112,7 +112,8 @@ namespace NodeArgument
         "input", "test", "output", "lr", "lrUpdateRate", 
         "dim", "ws", "epoch", "minCount", "minCountLabel", "neg",
         "wordNgrams", "loss", "bucket", "minn", "maxn",
-        "thread", "t", "label", "verbose", "pretrainedVectors"
+        "thread", "t", "label", "verbose", "pretrainedVectors",
+        "cutoff", "dsub", "qnorm", "qout", "retrain"
       };
       
       for (uint32_t i = 0; i < indexLen; ++i) {
@@ -131,14 +132,15 @@ namespace NodeArgument
         }
 
         v8::Local<v8::Value> value = obj->Get(v8::String::NewFromUtf8(isolate, theKey));
-        v8::String::Utf8Value utf8_value(value->ToString());
-
-        std::string valueValue = std::string(*utf8_value);
-        char *theValue = (char *)valueValue.c_str();
-
         NodeArgument::AddStringArgument(&arguments, &count, NodeArgument::concat("-", theKey));
-        NodeArgument::AddStringArgument(&arguments, &count, theValue);
 
+        if (!value->IsBoolean())
+        {
+          v8::String::Utf8Value utf8_value(value->ToString());
+          std::string valueValue = std::string(*utf8_value);
+          char *theValue = (char *)valueValue.c_str();
+          NodeArgument::AddStringArgument(&arguments, &count, theValue);
+        }
       }
     }
 
