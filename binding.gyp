@@ -25,6 +25,7 @@
         "src/node-argument.cc",
         "src/loadModel.cc",
         "src/train.cc",
+        "src/quantize.cc",
         "src/classifier.h",
         "src/classifierWorker.cc",
         "src/query.h",

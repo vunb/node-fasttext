@@ -73,6 +73,7 @@ class Wrapper {
         std::vector<PredictResult> predict(std::string sentence, int32_t k);
         std::vector<PredictResult> nn(std::string query, int32_t k);
         std::map<std::string, std::string> train(const std::vector<std::string> args);
+        std::map<std::string, std::string> quantize(const std::vector<std::string> args);
 
 
         void precomputeWordVectors();
