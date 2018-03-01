@@ -53,7 +53,7 @@ before_script:
 - echo "Publishing binaries? ->" $PUBLISH_BINARY
 
 install:
-- npm install
+- npm install --build-from-source
 
 script:
 - npm test
