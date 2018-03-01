@@ -24,7 +24,7 @@ install:
   - git submodule update --init
   # install modules
   - npm install -g node-gyp node-pre-gyp node-pre-gyp-github
-  - npm install
+  - npm install --build-from-source
   # Check if we're building the latest tag, if so
   # then we publish the binaries if tests pass.
   - ps: >
