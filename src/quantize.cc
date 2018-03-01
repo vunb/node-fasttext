@@ -5,7 +5,7 @@
 void Quantize::Execute () {
 	try {
         result_ = wrapper_->quantize( args_ );
-    } catch (std::string errorMessage) {
+    } catch (const std::string errorMessage) {
         SetErrorMessage(errorMessage.c_str());
     } catch (const char * str) {
         std::cout << "Exception: " << str << std::endl;
@@ -18,14 +18,15 @@ void Quantize::Execute () {
 }
 
 void Quantize::HandleErrorCallback() {
-    Nan::HandleScope scope;
+    const Nan::HandleScope scope;
+
     const auto res = GetFromPersistent("key").As<v8::Promise::Resolver>();
     (void)res->Reject(Nan::GetCurrentContext(), Nan::Error(ErrorMessage()));
     v8::Isolate::GetCurrent()->RunMicrotasks();
 }
 
 void Quantize::HandleOKCallback() {
-    Nan::HandleScope scope;
+    const Nan::HandleScope scope;
 
     NodeArgument::NodeArgument nodeArg;
     const v8::Local<v8::Object> result = nodeArg.mapToObject(result_);

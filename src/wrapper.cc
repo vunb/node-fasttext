@@ -306,8 +306,7 @@ std::map<std::string, std::string> Wrapper::quantize(const std::vector<std::stri
 	std::shared_ptr<Args> a = std::make_shared<Args>();
 	a->parseArgs(args);
 
-	std::string inputFilename = a->input;
-	if ( !fileExist(inputFilename) ) {
+	if ( !fileExist(a->input) ) {
 		throw "Input file is not exist.";
 	}
 
@@ -319,4 +318,5 @@ std::map<std::string, std::string> Wrapper::quantize(const std::vector<std::stri
     fastText_.loadModel(a->output + ".bin");
     fastText_.quantize(a);
     fastText_.saveModel();
+    return loadModel(a->output + ".ftz");
 }
