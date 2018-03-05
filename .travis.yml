@@ -59,8 +59,8 @@ script:
 - npm test
 - if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp package && node-pre-gyp-github publish --release; fi;
 
-cache:
-  directories:
-    - $HOME/.node-gyp
-    - $HOME/.npm
-    - node_modules
+# cache:
+#   directories:
+#     - $HOME/.node-gyp
+#     - $HOME/.npm
+#     - node_modules
