@@ -22,6 +22,8 @@ install:
   - set PATH=%APPDATA%\npm;%PATH%
   # install submodules
   - git submodule update --init
+  # fixes nodejs/node-gyp#972
+  - npm install -g npm@next
   # install modules
   - npm install --build-from-source
   # Check if we're building the latest tag, if so
