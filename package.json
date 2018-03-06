@@ -2,7 +2,6 @@
   "name": "fasttext",
   "version": "0.2.1",
   "description": "A nodejs binding for fasttext representation and classification",
-  "gypfile": true,
   "main": "index.js",
   "scripts": {
     "config": "node-pre-gyp configure --msvs_version=2015",
