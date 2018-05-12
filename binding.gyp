@@ -51,6 +51,11 @@
               "cflags_c+": [ "-std=c++11", "-fexceptions" ],
               "cflags_cc+": [ "-std=c++11", "-fexceptions" ],
           }],
+          [ "OS=='freebsd'", {
+              "cflags+": [ "-std=c++11", "-fexceptions" ],
+              "cflags_c+": [ "-std=c++11", "-fexceptions" ],
+              "cflags_cc+": [ "-std=c++11", "-fexceptions" ],
+          }],
           [ "OS=='mac'", {
               "cflags+": [ "-stdlib=libc++" ],
               "xcode_settings": {
