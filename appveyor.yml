@@ -23,7 +23,7 @@ install:
   # install submodules
   - git submodule update --init
   # fixes nodejs/node-gyp#972
-  - npm install -g npm@latest
+  - npm install -g npm@5.7.1
   # install modules
   - npm install -g node-pre-gyp node-pre-gyp-github
   - npm install --build-from-source

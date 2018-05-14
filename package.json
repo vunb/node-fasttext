@@ -1,6 +1,6 @@
 {
   "name": "fasttext",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "A nodejs binding for fasttext representation and classification",
   "main": "index.js",
   "scripts": {

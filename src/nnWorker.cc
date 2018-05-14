@@ -1,5 +1,6 @@
 
 
+#include <iostream>
 #include "nnWorker.h"
 #include <v8.h>
 
@@ -9,7 +10,14 @@ void NnWorker::Execute () {
         wrapper_->precomputeWordVectors();
         result_ = wrapper_->nn(query_, k_);
     } catch (std::string errorMessage) {
+        std::cout << "Exception: " << errorMessage << std::endl;
         SetErrorMessage(errorMessage.c_str());
+    } catch (const char * str) {
+        std::cout << "Exception: " << str << std::endl;
+        SetErrorMessage(str);
+    } catch(const std::exception& e) {
+        std::cout << "Exception: " << e.what() << std::endl;
+        SetErrorMessage(e.what());
     }
 }
 
