@@ -12,12 +12,8 @@ env:
     - secure: JyNJe+dEpj5feig+xwuopgJZGfih0gzOHj+uh9iLO0LgIILVwUzeUNkMZpaT/ydsLBLTdSTKary3mts2oE878lQImi1va0hB4QKKtf+P0kNmeYaEDc8U1dLOv/0d0veMQD3ig8JzajcU5s6znhPOi/PnNTY3aGSnvE3UNr/9N5sz0Gxw/nfnanK3VcRbDqkDw/f3lUj30YLc0xR4e1HXNS+bqSLRg8pgYHtwModjsX5Y1t3BQOsB4fZu/Joo3Hz5jr6uFHECcVTwW5LPtfNq+96iTdEOk+dU03uZCyr++vBqX0/8acOsY4heFeCKpQDSPxQ/tTBtEcRTRFME4FSCxc0oh9VorgkAjszSTL6Ff64rxEfRX4rqkWgqQaaeA1e8sgJENydFNvjYt1IoSTzdYvof7EPk3kk7rbZmTdaygqt2F2KDzjFC5z4jHYk04cQSm5jIrIVQfaBJ83SFm/cH6Q+totQ48OAJxFz4VfGG5m8Tl1gBjwhAwl3+9D2m2SdebxNjCAJ8My+JlHx1D6DTR+/ir/Wd9tppZc/L2jRhY/qNz5fq+OF+yzM2CQNBjMOOrYoSbEz+rCyaXg/EYAFn5KnA0D6dRKvdiCnbhrE9BlfzcTUVUi9rAXZ03Bl++NU9//ECe30sU/vjpHPiQs280eJkYphoknjpWuZp8FEu0c0=
 
 node_js:
-- '4'
-- '5'
-- '6'
-- '7'
-- '8'
-- '9'
+# support latest Nodejs LTS version
+- '10'
 
 addons:
   apt:
@@ -26,7 +22,7 @@ addons:
     packages:
     - gcc-4.8
     - g++-4.8
-    
+
 sudo: false
 
 before_install:
@@ -57,10 +53,10 @@ install:
 
 script:
 - npm test
-- if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp package && node-pre-gyp-github publish --release; fi;
+- if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp rebuild package && node-pre-gyp-github publish --release; fi;
 
-# cache:
-#   directories:
-#     - $HOME/.node-gyp
-#     - $HOME/.npm
-#     - node_modules
+#cache:
+#  directories:
+#    - $HOME/.node-gyp
+#    - $HOME/.npm
+#    - node_modules

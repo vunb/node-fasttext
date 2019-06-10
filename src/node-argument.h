@@ -16,29 +16,29 @@
 #include <stdlib.h>
 #include <vector>
 #include <map>
-#include <algorithm>    // for std::find
-#include <iterator>     // for std::begin, std::end
+#include <algorithm> // for std::find
+#include <iterator>  // for std::begin, std::end
 
 namespace NodeArgument
 {
-    struct CArgument
-    {
-      size_t argc;
-      char** argv;
-    };
+struct CArgument
+{
+  size_t argc;
+  char **argv;
+};
 
-    class NodeArgument
-    {
+class NodeArgument
+{
 
-    public:
-        char* concat(const char *s1, const char *s2);
-        int AddStringArgument(char*** strings, size_t* count, const char* newStr);
-        void PrintArguments(char** strings, size_t count);
-        bool isOnlyDouble(const char* str);
-        CArgument ObjectToCArgument(v8::Local<v8::Object> obj);
-        std::vector<std::string> ObjectToArrayString(v8::Local<v8::Object> obj);
-        v8::Local<v8::Object>  mapToObject(std::map<std::string, std::string> obj);
-    };
-}
+public:
+  char *concat(const char *s1, const char *s2);
+  int AddStringArgument(char ***strings, size_t *count, const char *newStr);
+  void PrintArguments(char **strings, size_t count);
+  bool isOnlyDouble(const char *str);
+  CArgument ObjectToCArgument(v8::Local<v8::Object> obj);
+  std::vector<std::string> ObjectToArrayString(v8::Local<v8::Object> obj);
+  v8::Local<v8::Object> mapToObject(std::map<std::string, std::string> obj);
+};
+} // namespace NodeArgument
 
 #endif

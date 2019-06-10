@@ -1,27 +1,28 @@
 #ifndef TRAIN_H
 #define TRAIN_H
 
-#include <nan.h>
+#include <node.h>
 #include "wrapper.h"
 
-class Train : public Nan::AsyncWorker {
-	public:
-		Train(const std::vector<std::string> args, Wrapper *wrapper) : 
-			Nan::AsyncWorker(new Nan::Callback()) , 
-			args_(args),
-			wrapper_(wrapper),
-			result_() {};
+class Train : public Nan::AsyncWorker
+{
+public:
+  Train(const std::vector<std::string> args, Wrapper *wrapper) :
+    Nan::AsyncWorker(new Nan::Callback()),
+    args_(args),
+    wrapper_(wrapper),
+    result_(){};
 
-		~Train() {};
+  ~Train(){};
 
-		void Execute ();
-        void HandleOKCallback ();
-        void HandleErrorCallback ();
+  void Execute();
+  void HandleOKCallback();
+  void HandleErrorCallback();
 
-    private: 
-    	const std::vector<std::string> args_;
-    	Wrapper *wrapper_;
-    	std::map<std::string, std::string> result_;
+private:
+  const std::vector<std::string> args_;
+  Wrapper *wrapper_;
+  std::map<std::string, std::string> result_;
 };
 
 #endif

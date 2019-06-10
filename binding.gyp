@@ -33,7 +33,7 @@
         "src/wrapper.cc",
         "src/addon.cc"
       ],
-      "include_dirs": ["<!(node -e \"require('nan')\")"],
+      "include_dirs": [],
       "cflags": [
           "-std=c++11",
           "-pthread",

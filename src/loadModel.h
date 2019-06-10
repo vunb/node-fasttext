@@ -1,13 +1,13 @@
 #ifndef LOADMODEL_H
 #define LOADMODEL_H
 
-#include <nan.h>
+#include <node.h>
 #include "wrapper.h"
 
 class LoadModel : public Nan::AsyncWorker {
 	public:
-		LoadModel(std::string filename , Wrapper *wrapper) : 
-			Nan::AsyncWorker(new Nan::Callback()) , 
+		LoadModel(std::string filename , Wrapper *wrapper) :
+			Nan::AsyncWorker(new Nan::Callback()) ,
 			filename(filename),
 			result_(),
 			wrapper_(wrapper) {};
@@ -18,7 +18,7 @@ class LoadModel : public Nan::AsyncWorker {
         void HandleOKCallback ();
         void HandleErrorCallback ();
 
-    private: 
+    private:
     	std::string filename;
     	std::map<std::string, std::string> result_;
     	Wrapper *wrapper_;

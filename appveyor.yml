@@ -4,17 +4,13 @@ environment:
     secure: ccYzaN4TslxESt7ITv1pVGLqtVEDzTAZwIEY0jxc3tjvRzZrzGm5V8pJPdgknlLZ
 
   matrix:
-  - nodejs_version: "4"
-  - nodejs_version: "5"
-  - nodejs_version: "6"
-  - nodejs_version: "7"
-  - nodejs_version: "8"
-  - nodejs_version: "9"
-  
+  # support latest Nodejs LTS version
+  - nodejs_version: "10"
+
 platform:
   - x64
   - x86
-  
+
 # Install scripts. (runs after repo cloning)
 install:
   # Get the latest stable version of Node.js or io.js
@@ -22,10 +18,8 @@ install:
   - set PATH=%APPDATA%\npm;%PATH%
   # install submodules
   - git submodule update --init
-  # fixes nodejs/node-gyp#972
-  - npm install -g npm@5.7.1
   # install modules
-  - npm install -g node-pre-gyp node-pre-gyp-github
+  - npm install -g node-gyp node-pre-gyp node-pre-gyp-github
   - npm install --build-from-source
   # Check if we're building the latest tag, if so
   # then we publish the binaries if tests pass.
@@ -48,7 +42,7 @@ test_script:
   # run tests
   - npm test
   # publish binary
-  - ps: if ($env:publish_binary -eq "true") { node-pre-gyp package; node-pre-gyp-github publish --release }
+  - ps: if ($env:publish_binary -eq "true") { node-pre-gyp configure clean build package; node-pre-gyp-github publish --release }
 
 # Don't actually build.
 build: off
