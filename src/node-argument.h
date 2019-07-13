@@ -9,6 +9,7 @@
 #ifndef NODEARGUMENT_NODEARGUMENT_H
 #define NODEARGUMENT_NODEARGUMENT_H
 
+#include <napi.h>
 #include <v8.h>
 #include <iostream>
 #include <stdio.h>
@@ -38,6 +39,7 @@ public:
   CArgument ObjectToCArgument(v8::Local<v8::Object> obj);
   std::vector<std::string> ObjectToArrayString(v8::Local<v8::Object> obj);
   v8::Local<v8::Object> mapToObject(std::map<std::string, std::string> obj);
+  // static Napi::Object mapToNapiObject(Napi::Env env, std::map<std::string, std::string> obj);
 };
 } // namespace NodeArgument
 
