@@ -11,23 +11,41 @@
 #include "train.h"
 #include "quantize.h"
 
+using v8::Context;
+using v8::Function;
+using v8::FunctionCallbackInfo;
+using v8::FunctionTemplate;
+using v8::Isolate;
+using v8::Local;
+using v8::Array;
+using v8::Number;
+using v8::Object;
+using v8::Persistent;
+using v8::String;
+using v8::Value;
+
 class Classifier : public Nan::ObjectWrap
 {
 public:
-  static NAN_MODULE_INIT(Init)
+  static v8::Persistent<v8::Function> constructor;
+
+  static void Init(v8::Local<v8::Object> exports);
   {
-    v8::Local<v8::FunctionTemplate> tpl = Nan::New<v8::FunctionTemplate>(New);
-    tpl->SetClassName(Nan::New("Classifier").ToLocalChecked());
+    Isolate* isolate = exports->GetIsolate();
+    // Prepare constructor template
+    Local<FunctionTemplate> tpl = FunctionTemplate::New(isolate, New);
+    tpl->SetClassName(String::NewFromUtf8(isolate, "Classifier"));
     tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
-    Nan::SetPrototypeMethod(tpl, "train", train);
-    Nan::SetPrototypeMethod(tpl, "predict", predict);
-    Nan::SetPrototypeMethod(tpl, "loadModel", loadModel);
-    Nan::SetPrototypeMethod(tpl, "quantize", quantize);
+    // Prototype
+    NODE_SET_PROTOTYPE_METHOD(tpl, "train", train);
+    NODE_SET_PROTOTYPE_METHOD(tpl, "predict", predict);
+    NODE_SET_PROTOTYPE_METHOD(tpl, "loadModel", loadModel);
+    NODE_SET_PROTOTYPE_METHOD(tpl, "quantize", quantize);
 
-    constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
-    Nan::Set(target, Nan::New("Classifier").ToLocalChecked(),
-             Nan::GetFunction(tpl).ToLocalChecked());
+
+    constructor.Reset(isolate, tpl->GetFunction());
+    exports->Set(String::NewFromUtf8(isolate, "Classifier"), tpl->GetFunction());
   }
 
 private:
@@ -39,46 +57,48 @@ private:
     delete wrapper_;
   }
 
-  static NAN_METHOD(New)
+  static void New(const v8::FunctionCallbackInfo<v8::Value>& args)
   {
-    if (info.IsConstructCall())
-    {
-      std::string command;
-      if (!info[0]->IsString())
-      {
+    std::string command;
+    Isolate* isolate = args.GetIsolate();
+    if (args.Length() < 1 || !args[0]->IsString()) {
         command = "model.bin";
-      }
-      else
-      {
-        v8::String::Utf8Value commandArg(info[0]->ToString());
-        command = std::string(*commandArg);
-      }
+    } else {
+      v8::String::Utf8Value commandArg(args[0]->ToString());
+      command = std::string(*commandArg);
+    }
 
+    if (args.IsConstructCall()) {
+      // Invoked as constructor: `new MyObject(...)`
       Classifier *obj = new Classifier(command);
       obj->Wrap(info.This());
       info.GetReturnValue().Set(info.This());
-    }
-    else
-    {
+    } else {
+      // Invoked as plain function `MyObject(...)`, turn into construct call.
       const int argc = 1;
-      v8::Local<v8::Value> argv[argc] = {info[0]};
-      v8::Local<v8::Function> cons = Nan::New(constructor());
-      info.GetReturnValue().Set(Nan::NewInstance(cons, argc, argv).ToLocalChecked());
+      Local<Value> argv[argc] = { args[0] };
+      Local<Context> context = isolate->GetCurrentContext();
+      Local<Function> cons = Local<Function>::New(isolate, constructor);
+      Local<Object> result = cons->NewInstance(context, argc, argv).ToLocalChecked();
+      args.GetReturnValue().Set(result);
     }
   }
 
-  static NAN_METHOD(loadModel)
+  static void loadModel(const v8::FunctionCallbackInfo<v8::Value>& args)
   {
-
-    if (!info[0]->IsString())
-    {
-      Nan::ThrowError("model file path must be a string");
+    if (args.Length() < 1) {
+      isolate->ThrowException(String::NewFromUtf8(isolate, "Path to model file is missing"));
       return;
     }
 
-    v8::String::Utf8Value modelArg(info[0]->ToString());
+    if (!args[0]->IsString()) {
+      isolate->ThrowException(String::NewFromUtf8(isolate, "Model file path must be a string"));
+      return;
+    }
+
+    v8::String::Utf8Value modelArg(args[0]->ToString());
     std::string filename = std::string(*modelArg);
-    Classifier *obj = Nan::ObjectWrap::Unwrap<Classifier>(info.Holder());
+    Classifier *obj = Nan::ObjectWrap::Unwrap<Classifier>(args.Holder());
 
     const auto worker = new LoadModel(filename, obj->wrapper_);
     const auto resolver = v8::Promise::Resolver::New(info.GetIsolate());
@@ -195,11 +215,11 @@ private:
     }
   }
 
-  static inline Nan::Persistent<v8::Function> &constructor()
-  {
-    static Nan::Persistent<v8::Function> my_constructor;
-    return my_constructor;
-  }
+  // static inline Nan::Persistent<v8::Function> &constructor()
+  // {
+  //   static Nan::Persistent<v8::Function> my_constructor;
+  //   return my_constructor;
+  // }
 
   Wrapper *wrapper_;
 

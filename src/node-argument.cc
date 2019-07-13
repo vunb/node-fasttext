@@ -28,7 +28,7 @@ namespace NodeArgument
     }
     return true;
   }
-  
+
   /**
    * Concenate string
    */
@@ -48,29 +48,29 @@ namespace NodeArgument
   {
     char* copy;
     char** p;
-   
-    if (strings == NULL || newStr == NULL || 
-      (copy = (char*)malloc(strlen(newStr) + 1)) == NULL) 
+
+    if (strings == NULL || newStr == NULL ||
+      (copy = (char*)malloc(strlen(newStr) + 1)) == NULL)
     {
 
       return 0;
     }
-   
+
     strcpy(copy, newStr);
-   
+
     if ((p = (char**) realloc(*strings, (*count + 1) * sizeof(char*))) == NULL)
     {
       free(copy);
       return 0;
     }
-   
+
     *strings = p;
-   
+
     (*strings)[(*count)++] = copy;
-   
+
     return 1;
   }
-   
+
   /**
    * Print all argument value
    */
@@ -90,7 +90,7 @@ namespace NodeArgument
   /**
    * Convert Node V8 Object to char** argument (argv) in C/C++
    */
-  CArgument NodeArgument::ObjectToCArgument(v8::Local<v8::Object> obj) 
+  CArgument NodeArgument::ObjectToCArgument(v8::Local<v8::Object> obj)
   {
     v8::Isolate* isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
@@ -102,20 +102,20 @@ namespace NodeArgument
     size_t count = 0;
 
     uint32_t indexLen = 0;
-    if (!maybe_props.IsEmpty()) 
+    if (!maybe_props.IsEmpty())
     {
       v8::Local<v8::Array> props = maybe_props.ToLocalChecked();
       indexLen = props->Length();
 
       // for validation
       std::string permitted_command[] = {
-        "input", "test", "output", "lr", "lrUpdateRate", 
+        "input", "test", "output", "lr", "lrUpdateRate",
         "dim", "ws", "epoch", "minCount", "minCountLabel", "neg",
         "wordNgrams", "loss", "bucket", "minn", "maxn",
         "thread", "t", "label", "verbose", "pretrainedVectors",
         "cutoff", "dsub", "qnorm", "qout", "retrain"
       };
-      
+
       for (uint32_t i = 0; i < indexLen; ++i) {
         v8::Local<v8::Value> key = props->Get(i);
         const v8::String::Utf8Value utf8_key(key);
@@ -123,7 +123,7 @@ namespace NodeArgument
         std::string keyValue = std::string(*utf8_key);
         char *theKey = (char *)keyValue.c_str();
 
-        bool exists = std::find(std::begin(permitted_command), 
+        bool exists = std::find(std::begin(permitted_command),
           std::end(permitted_command), keyValue) != std::end(permitted_command);
 
         if(!exists)
@@ -146,7 +146,7 @@ namespace NodeArgument
 
     CArgument response = { count, arguments };
     return response;
-  } 
+  }
 
 
   /**
@@ -198,8 +198,8 @@ namespace NodeArgument
         value = v8::String::NewFromUtf8(isolate, iterator.second.c_str());
       }
       result->Set(
-        v8::String::NewFromUtf8(isolate, iterator.first.c_str()), 
-        value          
+        v8::String::NewFromUtf8(isolate, iterator.first.c_str()),
+        value
       );
     }
     return result;

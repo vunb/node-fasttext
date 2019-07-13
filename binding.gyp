@@ -23,6 +23,7 @@
         "fastText/src/vector.h",
         "fastText/src/vector.cc",
         "src/node-argument.cc",
+        "src/node-fasttext.cc",
         "src/loadModel.cc",
         "src/train.cc",
         "src/quantize.cc",
@@ -33,7 +34,12 @@
         "src/wrapper.cc",
         "src/addon.cc"
       ],
-      "include_dirs": [],
+      "defines": [
+        "NAPI_VERSION=<(napi_build_version)",
+      ],
+      "include_dirs": [
+        "<!@(node -p \"require('node-addon-api').include\")"
+      ],
       "cflags": [
           "-std=c++11",
           "-pthread",

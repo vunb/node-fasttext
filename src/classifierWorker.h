@@ -1,30 +1,30 @@
 
-#ifndef CLASSIFIER_WORKER_H
-#define CLASSIFIER_WORKER_H
+// #ifndef CLASSIFIER_WORKER_H
+// #define CLASSIFIER_WORKER_H
 
-#include <nan.h>
-#include "wrapper.h"
+// #include <nan.h>
+// #include "wrapper.h"
 
-class ClassifierWorker : public Nan::AsyncWorker {
-    public:
-        ClassifierWorker (std::string sentence, int32_t k, Wrapper *wrapper):
-            Nan::AsyncWorker(new Nan::Callback()),
-            sentence_(sentence),
-            wrapper_(wrapper),
-            result_(),
-            k_(k) {};
+// class ClassifierWorker : public Nan::AsyncWorker {
+//   public:
+//     ClassifierWorker (std::string sentence, int32_t k, Wrapper *wrapper):
+//       Nan::AsyncWorker(new Nan::Callback()),
+//       sentence_(sentence),
+//       wrapper_(wrapper),
+//       result_(),
+//       k_(k) {};
 
-        ~ClassifierWorker () {};
+//     ~ClassifierWorker () {};
 
-        void Execute ();
-        void HandleOKCallback ();
-        void HandleErrorCallback ();
+//     void Execute ();
+//     void HandleOKCallback ();
+//     void HandleErrorCallback ();
 
-    private:
-        std::string sentence_;
-        Wrapper *wrapper_;
-        std::vector<PredictResult> result_;
-        int32_t k_;
-};
+//   private:
+//     std::string sentence_;
+//     Wrapper *wrapper_;
+//     std::vector<PredictResult> result_;
+//     int32_t k_;
+// };
 
-#endif
+// #endif

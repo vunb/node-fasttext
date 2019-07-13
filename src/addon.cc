@@ -1,16 +1,17 @@
 
-#include <node.h>
-#include "classifier.h"   // NOLINT(build/include)
-#include "query.h"        // NOLINT(build/include)
+#include <napi.h>
+#include "node-fasttext.h"
+// #include "classifier.h"   // NOLINT(build/include)
+// #include "query.h"        // NOLINT(build/include)
 
-NAN_MODULE_INIT(Init) {
-  Classifier::Init(target);
-  Query::Init(target);
+// void Initialize(v8::Local<v8::Object> exports) {
+//   Classifier::Init(exports);
+//   Query::Init(exports);
+// }
+
+Napi::Object Initialize(Napi::Env env, Napi::Object exports) {
+  return NodeFasttext::Init(env, exports);
+
 }
 
-void Initialize(v8::Local<v8::Object> exports) {
-  Classifier::Init(exports);
-  Query::Init(exports);
-}
-
-NODE_MODULE(fastTextAddon, Initialize)
+NODE_API_MODULE(addon, Initialize)

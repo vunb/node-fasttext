@@ -1,26 +1,26 @@
-#ifndef QUANTIZE_H
-#define QUANTIZE_H
+// #ifndef QUANTIZE_H
+// #define QUANTIZE_H
 
-#include <node.h>
-#include "wrapper.h"
+// #include <node.h>
+// #include "wrapper.h"
 
-class Quantize : public Nan::AsyncWorker
-{
-public:
-  Quantize(
-      const std::vector<std::string> args,
-      Wrapper *wrapper) : Nan::AsyncWorker(new Nan::Callback()), args_(args), wrapper_(wrapper), result_(){};
+// class Quantize : public Nan::AsyncWorker
+// {
+// public:
+//   Quantize(
+//       const std::vector<std::string> args,
+//       Wrapper *wrapper) : Nan::AsyncWorker(new Nan::Callback()), args_(args), wrapper_(wrapper), result_(){};
 
-  ~Quantize(){};
+//   ~Quantize(){};
 
-  void Execute();
-  void HandleOKCallback();
-  void HandleErrorCallback();
+//   void Execute();
+//   void HandleOKCallback();
+//   void HandleErrorCallback();
 
-private:
-  const std::vector<std::string> args_;
-  Wrapper *wrapper_;
-  std::map<std::string, std::string> result_;
-};
+// private:
+//   const std::vector<std::string> args_;
+//   Wrapper *wrapper_;
+//   std::map<std::string, std::string> result_;
+// };
 
-#endif
+// #endif
