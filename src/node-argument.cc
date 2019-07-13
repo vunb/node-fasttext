@@ -210,25 +210,25 @@ v8::Local<v8::Object> NodeArgument::mapToObject(std::map<std::string, std::strin
   return result;
 }
 
-// static Napi::Object NodeArgument::mapToObject(Napi::Env env, std::map<std::string, std::string> obj)
-// {
-//   Napi::Object result = Napi::Object::New(env);
+Napi::Object NodeArgument::mapToNapiObject(Napi::Env env, std::map<std::string, std::string> obj)
+{
+  Napi::Object result = Napi::Object::New(env);
 
-//   for (auto const &iterator : obj)
-//   {
-//     Napi::Value value;
+  for (auto const &iterator : obj)
+  {
+    Napi::Value value;
 
-//     if (isOnlyDouble(iterator.second.c_str()))
-//     {
-//       value = Napi::Number::New(env, atof(iterator.second.c_str()));
-//     }
-//     else
-//     {
-//       value = Napi::String::New(env, iterator.second.c_str());
-//     }
-//     result.Set(Napi::String::New(env, iterator.first.c_str()), value);
-//   }
-//   return result;
-// }
+    if (isOnlyDouble(iterator.second.c_str()))
+    {
+      value = Napi::Number::New(env, atof(iterator.second.c_str()));
+    }
+    else
+    {
+      value = Napi::String::New(env, iterator.second.c_str());
+    }
+    result.Set(Napi::String::New(env, iterator.first.c_str()), value);
+  }
+  return result;
+}
 
 } // namespace NodeArgument
