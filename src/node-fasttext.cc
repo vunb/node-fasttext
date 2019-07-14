@@ -8,12 +8,16 @@ Napi::Object NodeFasttext::Init(Napi::Env env, Napi::Object exports)
 {
   Napi::HandleScope scope(env);
 
-  Napi::Function func = DefineClass(env, "NodeFasttext", {InstanceMethod("loadModel", &NodeFasttext::LoadModel), InstanceMethod("plusOne", &NodeFasttext::PlusOne), InstanceMethod("value", &NodeFasttext::GetValue), InstanceMethod("multiply", &NodeFasttext::Multiply)});
+  Napi::Function func = DefineClass(env, "Classifier",
+                                    {InstanceMethod("loadModel", &NodeFasttext::LoadModel),
+                                     InstanceMethod("plusOne", &NodeFasttext::PlusOne),
+                                     InstanceMethod("value", &NodeFasttext::GetValue),
+                                     InstanceMethod("multiply", &NodeFasttext::Multiply)});
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
 
-  exports.Set("NodeFasttext", func);
+  exports.Set("Classifier", func);
   return exports;
 }
 
@@ -23,13 +27,11 @@ NodeFasttext::NodeFasttext(const Napi::CallbackInfo &info) : Napi::ObjectWrap<No
   Napi::HandleScope scope(env);
   std::string modelFileName = "";
 
-  if (info.Length > 0 && !info[0].IsString())
+  if (info.Length() > 0 && !info[0].IsString())
   {
     modelFileName = info[0].As<Napi::String>().Utf8Value();
   }
 
-  Napi::Number value = info[0].As<Napi::Number>();
-  this->value_ = value.DoubleValue();
   this->wrapper_ = new Wrapper(modelFileName);
 }
 
