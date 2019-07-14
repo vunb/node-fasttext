@@ -18,6 +18,7 @@ private:
   Napi::Value PlusOne(const Napi::CallbackInfo &info);
   Napi::Value Multiply(const Napi::CallbackInfo &info);
   Napi::Value LoadModel(const Napi::CallbackInfo &info);
+  Napi::Value Predict(const Napi::CallbackInfo &info);
 
   double value_;
   Wrapper *wrapper_;

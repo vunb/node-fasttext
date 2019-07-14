@@ -7,7 +7,7 @@
 class LoadModelWorker : public Napi::AsyncWorker
 {
 public:
-  LoadModelWorker(std::string filename, Wrapper *wrapper, Napi::Function &callback, Napi::Promise::Deferred deferred)
+  LoadModelWorker(std::string filename, Wrapper *wrapper, Napi::Promise::Deferred deferred, Napi::Function &callback)
       : Napi::AsyncWorker(callback),
         filename(filename),
         result_(),

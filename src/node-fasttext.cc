@@ -1,5 +1,6 @@
 #include "node-fasttext.h"
 #include "loadModel.h"
+#include "predictWorker.h"
 #include <iostream>
 
 Napi::FunctionReference NodeFasttext::constructor;
@@ -10,6 +11,7 @@ Napi::Object NodeFasttext::Init(Napi::Env env, Napi::Object exports)
 
   Napi::Function func = DefineClass(env, "Classifier",
                                     {InstanceMethod("loadModel", &NodeFasttext::LoadModel),
+                                     InstanceMethod("predict", &NodeFasttext::Predict),
                                      InstanceMethod("plusOne", &NodeFasttext::PlusOne),
                                      InstanceMethod("value", &NodeFasttext::GetValue),
                                      InstanceMethod("multiply", &NodeFasttext::Multiply)});
@@ -95,8 +97,40 @@ Napi::Value NodeFasttext::LoadModel(const Napi::CallbackInfo &info)
 
   std::cout << "Preparing load model from: " << filename.Utf8Value() << std::endl;
 
-  LoadModelWorker *worker = new LoadModelWorker(filename, this->wrapper_, callback, deferred);
+  LoadModelWorker *worker = new LoadModelWorker(filename, this->wrapper_, deferred, callback);
   worker->Queue();
 
   return worker->defferred_.Promise();
+}
+
+Napi::Value NodeFasttext::Predict(const Napi::CallbackInfo &info)
+{
+  Napi::Env env = info.Env();
+  Napi::HandleScope scope(env);
+  Napi::Function callback = Napi::Function::New(env, EmptyCallback);
+  ;
+  int32_t k = 1;
+
+  if (info.Length() < 1 || !info[0].IsString())
+  {
+    Napi::TypeError::New(env, "sentence must be a string").ThrowAsJavaScriptException();
+  }
+
+  if (info.Length() > 1 && info[1].IsNumber())
+  {
+    k = info[1].As<Napi::Number>().Int32Value();
+  }
+
+  if (info.Length() > 2 && info[2].IsFunction())
+  {
+    callback = info[2].As<Napi::Function>();
+  }
+
+  Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(info.Env());
+  Napi::String sentence = info[0].As<Napi::String>();
+
+  PredictWorker *worker = new PredictWorker(sentence, k, this->wrapper_, deferred, callback);
+  worker->Queue();
+
+  return worker->deferred_.Promise();
 }

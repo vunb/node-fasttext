@@ -29,7 +29,7 @@
         "src/train.cc",
         "src/quantize.cc",
         "src/classifier.h",
-        "src/classifierWorker.cc",
+        "src/predictWorker.cc",
         "src/query.h",
         "src/nnWorker.cc",
         "src/wrapper.cc",
