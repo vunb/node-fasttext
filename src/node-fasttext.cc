@@ -21,17 +21,16 @@ NodeFasttext::NodeFasttext(const Napi::CallbackInfo &info) : Napi::ObjectWrap<No
 {
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
+  std::string modelFileName = "";
 
-  int length = info.Length();
-
-  if (length <= 0 || !info[0].IsNumber())
+  if (info.Length > 0 && !info[0].IsString())
   {
-    Napi::TypeError::New(env, "Number expected").ThrowAsJavaScriptException();
+    modelFileName = info[0].As<Napi::String>().Utf8Value();
   }
 
   Napi::Number value = info[0].As<Napi::Number>();
   this->value_ = value.DoubleValue();
-  this->wrapper_ = new Wrapper("");
+  this->wrapper_ = new Wrapper(modelFileName);
 }
 
 Napi::Value NodeFasttext::GetValue(const Napi::CallbackInfo &info)
