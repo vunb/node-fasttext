@@ -29,7 +29,7 @@ NodeFasttext::NodeFasttext(const Napi::CallbackInfo &info) : Napi::ObjectWrap<No
   Napi::HandleScope scope(env);
   std::string modelFileName = "";
 
-  if (info.Length() > 0 && !info[0].IsString())
+  if (info.Length() > 0 && info[0].IsString())
   {
     modelFileName = info[0].As<Napi::String>().Utf8Value();
   }
