@@ -86,13 +86,13 @@ Napi::Value NodeFasttext::LoadModel(const Napi::CallbackInfo &info)
   }
   else
   {
-    // callback = Napi::Function::New(env, EmptyCallback);
+    callback = Napi::Function::New(env, EmptyCallback);
   }
 
   Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(info.Env());
   Napi::String filename = info[0].As<Napi::String>();
 
-  std::cout << "Exception: " << filename.Utf8Value() << std::endl;
+  std::cout << "Preparing load model from: " << filename.Utf8Value() << std::endl;
 
   LoadModelWorker *worker = new LoadModelWorker(filename, this->wrapper_, callback, deferred);
   worker->Queue();

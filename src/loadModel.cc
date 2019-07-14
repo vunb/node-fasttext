@@ -21,7 +21,10 @@ void LoadModelWorker::OnOK()
   defferred_.Resolve(result);
 
   // Call empty function
-  Callback().Call({});
+  if (!Callback().IsEmpty())
+  {
+    Callback().Call({Env().Null(), result});
+  }
 }
 
 void LoadModelWorker::OnError()

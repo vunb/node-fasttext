@@ -22,6 +22,7 @@
         "fastText/src/utils.cc",
         "fastText/src/vector.h",
         "fastText/src/vector.cc",
+        "src/node-util.cc",
         "src/node-argument.cc",
         "src/node-fasttext.cc",
         "src/loadModel.cc",
