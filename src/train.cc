@@ -33,17 +33,16 @@ void TrainWorker::OnError(const Napi::Error &e)
 
 void TrainWorker::OnOK()
 {
-  Napi::HandleScope scope(Env());
-  Napi::Array result = Napi::Array::New(Env(), result_.size());
   Napi::Env env = Env();
+  Napi::HandleScope scope(env);
 
   NodeArgument::NodeArgument nodeArg;
   Napi::Object result = nodeArg.mapToNapiObject(env, result_);
-  defferred_.Resolve(result);
+  deferred_.Resolve(result);
 
   // Call empty function
   if (!Callback().IsEmpty())
   {
-    Callback().Call({Env().Null(), result});
+    Callback().Call({env.Null(), result});
   }
 }

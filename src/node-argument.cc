@@ -90,8 +90,8 @@ void NodeArgument::PrintArguments(char **strings, size_t count)
 }
 
 /**
-   * Convert Node V8 Object to char** argument (argv) in C/C++
-   */
+ * Convert Node V8 Object to char** argument (argv) in C/C++
+ */
 CArgument NodeArgument::ObjectToCArgument(v8::Local<v8::Object> obj)
 {
   v8::Isolate *isolate = v8::Isolate::GetCurrent();
@@ -140,6 +140,59 @@ CArgument NodeArgument::ObjectToCArgument(v8::Local<v8::Object> obj)
       {
         v8::String::Utf8Value utf8_value(value->ToString());
         std::string valueValue = std::string(*utf8_value);
+        char *theValue = (char *)valueValue.c_str();
+        NodeArgument::AddStringArgument(&arguments, &count, theValue);
+      }
+    }
+  }
+
+  CArgument response = {count, arguments};
+  return response;
+}
+
+CArgument NodeArgument::NapiObjectToCArgument(Napi::Env env, Napi::Object obj)
+{
+  Napi::HandleScope scope(env);
+  Napi::Array props = obj.GetPropertyNames();
+
+  char **arguments = NULL;
+  size_t count = 0;
+
+  uint32_t indexLen = 0;
+  if (!props.IsEmpty())
+  {
+    indexLen = props.Length();
+
+    // for validation
+    std::string permitted_command[] = {
+        "input", "test", "output", "lr", "lrUpdateRate",
+        "dim", "ws", "epoch", "minCount", "minCountLabel", "neg",
+        "wordNgrams", "loss", "bucket", "minn", "maxn",
+        "thread", "t", "label", "verbose", "pretrainedVectors",
+        "cutoff", "dsub", "qnorm", "qout", "retrain"};
+
+    for (uint32_t i = 0; i < indexLen; ++i)
+    {
+      Napi::String key = props.Get(i).As<Napi::String>();
+
+      std::string keyValue = key.Utf8Value();
+      char *theKey = (char *)keyValue.c_str();
+
+      bool exists = std::find(std::begin(permitted_command),
+                              std::end(permitted_command), keyValue) != std::end(permitted_command);
+
+      if (!exists)
+      {
+        throw "Unknown argument: " + keyValue;
+      }
+
+      Napi::Value value = obj.Get(keyValue);
+      NodeArgument::AddStringArgument(&arguments, &count, NodeArgument::concat("-", theKey));
+
+      if (!value.IsBoolean())
+      {
+        std::string valueValue = value.ToString().Utf8Value();
+        // std::cout << "OKKKKK!!!" << keyValue << ": " << valueValue << std::endl;
         char *theValue = (char *)valueValue.c_str();
         NodeArgument::AddStringArgument(&arguments, &count, theValue);
       }

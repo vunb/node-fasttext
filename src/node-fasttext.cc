@@ -176,12 +176,12 @@ Napi::Value NodeFasttext::Train(const Napi::CallbackInfo &info)
 
   try
   {
-    c_argument = nodeArg.ObjectToCArgument(confObj);
+    Napi::Object confObj = info[1].As<Napi::Object>();
+    c_argument = nodeArg.NapiObjectToCArgument(env, confObj);
   }
   catch (std::string errorMessage)
   {
-    Nan::ThrowError(errorMessage.c_str());
-    return;
+    Napi::TypeError::New(env, errorMessage.c_str()).ThrowAsJavaScriptException();
   }
 
   int count = c_argument.argc;
@@ -196,7 +196,8 @@ Napi::Value NodeFasttext::Train(const Napi::CallbackInfo &info)
     args.push_back(argument[j]);
   }
 
-  TrainWorker *worker = new TrainWorker(command, k, this->wrapper_, deferred, callback);
+  //TODO: check command type quantize, supervised
+  TrainWorker *worker = new TrainWorker(args, this->wrapper_, deferred, callback);
   worker->Queue();
 
   return worker->deferred_.Promise();

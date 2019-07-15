@@ -39,6 +39,7 @@ public:
   CArgument ObjectToCArgument(v8::Local<v8::Object> obj);
   std::vector<std::string> ObjectToArrayString(v8::Local<v8::Object> obj);
   v8::Local<v8::Object> mapToObject(std::map<std::string, std::string> obj);
+  CArgument NapiObjectToCArgument(Napi::Env env, Napi::Object obj);
   Napi::Object mapToNapiObject(Napi::Env env, std::map<std::string, std::string> obj);
 };
 } // namespace NodeArgument

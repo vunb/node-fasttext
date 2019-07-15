@@ -7,11 +7,12 @@
 class TrainWorker : public Napi::AsyncWorker
 {
 public:
-  TrainWorker(const std::vector<std::string> args, Wrapper *wrapper, Napi::Promise::Deferred deferred, Napi::Function &callback) :
-    Napi::AsyncWorker(callback),
-    args_(args),
-    wrapper_(wrapper),
-    result_(){};
+  TrainWorker(const std::vector<std::string> args, Wrapper *wrapper, Napi::Promise::Deferred deferred, Napi::Function &callback)
+      : Napi::AsyncWorker(callback),
+        args_(args),
+        wrapper_(wrapper),
+        deferred_(deferred),
+        result_(){};
 
   ~TrainWorker(){};
 
