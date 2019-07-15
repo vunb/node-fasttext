@@ -3,6 +3,7 @@
 
 #include <napi.h>
 #include "node-util.h"
+#include "node-argument.h"
 #include "wrapper.h"
 
 class NodeFasttext : public Napi::ObjectWrap<NodeFasttext>
@@ -19,6 +20,7 @@ private:
   Napi::Value Multiply(const Napi::CallbackInfo &info);
   Napi::Value LoadModel(const Napi::CallbackInfo &info);
   Napi::Value Predict(const Napi::CallbackInfo &info);
+  Napi::Value Train(const Napi::CallbackInfo &info);
 
   double value_;
   Wrapper *wrapper_;

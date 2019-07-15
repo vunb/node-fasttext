@@ -1,36 +1,49 @@
-// #include "node-argument.h"
-// #include "train.h"
+#include "train.h"
+#include "node-argument.h"
 
+void TrainWorker::Execute()
+{
+  try
+  {
+    result_ = wrapper_->train(args_);
+  }
+  catch (std::string errorMessage)
+  {
+    SetError(errorMessage.c_str());
+  }
+  catch (const char *str)
+  {
+    SetError(str);
+  }
+  catch (const std::exception &e)
+  {
+    SetError(e.what());
+  }
+}
 
-// void Train::Execute () {
-// 	try {
-//         result_ = wrapper_->train( args_ );
-//     } catch (std::string errorMessage) {
-//         SetErrorMessage(errorMessage.c_str());
-//     } catch (const char * str) {
-//         std::cout << "Exception: " << str << std::endl;
-//         SetErrorMessage(str);
-//     } catch(const std::exception& e) {
-// 	    // Handle exception
-//         std::cout << "Exception: " << e.what() << std::endl;
-//         SetErrorMessage(e.what());
-//     }
-// }
+void TrainWorker::OnError(const Napi::Error &e)
+{
+  Napi::HandleScope scope(Env());
+  Napi::String error = Napi::String::New(Env(), e.Message());
+  deferred_.Reject(error);
 
+  // Call empty function
+  Callback().Call({error});
+}
 
-// void Train::HandleErrorCallback () {
-//     Nan::HandleScope scope;
-//     auto res =  GetFromPersistent("key").As<v8::Promise::Resolver>();
-//     res->Reject( Nan::GetCurrentContext() , Nan::Error(ErrorMessage()));
-//     v8::Isolate::GetCurrent()->RunMicrotasks();
-// }
+void TrainWorker::OnOK()
+{
+  Napi::HandleScope scope(Env());
+  Napi::Array result = Napi::Array::New(Env(), result_.size());
+  Napi::Env env = Env();
 
-// void Train::HandleOKCallback () {
-//     Nan::HandleScope scope;
+  NodeArgument::NodeArgument nodeArg;
+  Napi::Object result = nodeArg.mapToNapiObject(env, result_);
+  defferred_.Resolve(result);
 
-//     NodeArgument::NodeArgument nodeArg;
-//     v8::Local<v8::Object> result = nodeArg.mapToObject( result_ );
-//     auto res = GetFromPersistent("key").As<v8::Promise::Resolver>();
-//     res->Resolve(result);
-//     v8::Isolate::GetCurrent()->RunMicrotasks();
-// }
+  // Call empty function
+  if (!Callback().IsEmpty())
+  {
+    Callback().Call({Env().Null(), result});
+  }
+}

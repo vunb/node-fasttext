@@ -1,4 +1,3 @@
-#include <iostream>
 #include "predictWorker.h"
 
 void PredictWorker::Execute()
