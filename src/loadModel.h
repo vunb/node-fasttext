@@ -12,11 +12,11 @@ public:
         filename(filename),
         result_(),
         wrapper_(wrapper),
-        defferred_(deferred){};
+        deferred_(deferred){};
 
   ~LoadModelWorker(){};
 
-  Napi::Promise::Deferred defferred_;
+  Napi::Promise::Deferred deferred_;
   void Execute();
   void OnOK();
   void OnError();

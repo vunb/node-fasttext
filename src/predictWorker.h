@@ -8,7 +8,12 @@
 class PredictWorker : public Napi::AsyncWorker
 {
 public:
-  PredictWorker(std::string sentence, int32_t k, Wrapper *wrapper, Napi::Promise::Deferred deferred, Napi::Function &callback)
+  PredictWorker(
+      std::string sentence,
+      int32_t k,
+      Wrapper *wrapper,
+      Napi::Promise::Deferred deferred,
+      Napi::Function &callback)
       : Napi::AsyncWorker(callback),
         deferred_(deferred),
         sentence_(sentence),

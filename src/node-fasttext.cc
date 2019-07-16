@@ -2,6 +2,7 @@
 #include "loadModel.h"
 #include "predictWorker.h"
 #include "train.h"
+#include "quantize.h"
 #include <iostream>
 
 Napi::FunctionReference NodeFasttext::constructor;
@@ -14,9 +15,7 @@ Napi::Object NodeFasttext::Init(Napi::Env env, Napi::Object exports)
                                     {InstanceMethod("loadModel", &NodeFasttext::LoadModel),
                                      InstanceMethod("predict", &NodeFasttext::Predict),
                                      InstanceMethod("train", &NodeFasttext::Train),
-                                     InstanceMethod("plusOne", &NodeFasttext::PlusOne),
-                                     InstanceMethod("value", &NodeFasttext::GetValue),
-                                     InstanceMethod("multiply", &NodeFasttext::Multiply)});
+                                     InstanceMethod("quantize", &NodeFasttext::Quantize)});
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
@@ -37,37 +36,6 @@ NodeFasttext::NodeFasttext(const Napi::CallbackInfo &info) : Napi::ObjectWrap<No
   }
 
   this->wrapper_ = new Wrapper(modelFileName);
-}
-
-Napi::Value NodeFasttext::GetValue(const Napi::CallbackInfo &info)
-{
-  double num = this->value_;
-
-  return Napi::Number::New(info.Env(), num);
-}
-
-Napi::Value NodeFasttext::PlusOne(const Napi::CallbackInfo &info)
-{
-  this->value_ = this->value_ + 1;
-
-  return NodeFasttext::GetValue(info);
-}
-
-Napi::Value NodeFasttext::Multiply(const Napi::CallbackInfo &info)
-{
-  Napi::Number multiple;
-  if (info.Length() <= 0 || !info[0].IsNumber())
-  {
-    multiple = Napi::Number::New(info.Env(), 1);
-  }
-  else
-  {
-    multiple = info[0].As<Napi::Number>();
-  }
-
-  Napi::Object obj = constructor.New({Napi::Number::New(info.Env(), this->value_ * multiple.DoubleValue())});
-
-  return obj;
 }
 
 Napi::Value NodeFasttext::LoadModel(const Napi::CallbackInfo &info)
@@ -102,7 +70,7 @@ Napi::Value NodeFasttext::LoadModel(const Napi::CallbackInfo &info)
   LoadModelWorker *worker = new LoadModelWorker(filename, this->wrapper_, deferred, callback);
   worker->Queue();
 
-  return worker->defferred_.Promise();
+  return worker->deferred_.Promise();
 }
 
 Napi::Value NodeFasttext::Predict(const Napi::CallbackInfo &info)
@@ -196,8 +164,65 @@ Napi::Value NodeFasttext::Train(const Napi::CallbackInfo &info)
     args.push_back(argument[j]);
   }
 
-  //TODO: check command type quantize, supervised
-  TrainWorker *worker = new TrainWorker(args, this->wrapper_, deferred, callback);
+  if (command == "quantize")
+  {
+    QuantizeWorker *worker = new QuantizeWorker(args, this->wrapper_, deferred, callback);
+    worker->Queue();
+    return worker->deferred_.Promise();
+  }
+  else
+  {
+    TrainWorker *worker = new TrainWorker(args, this->wrapper_, deferred, callback);
+    worker->Queue();
+    return worker->deferred_.Promise();
+  }
+}
+
+Napi::Value NodeFasttext::Quantize(const Napi::CallbackInfo &info)
+{
+  Napi::Env env = info.Env();
+  Napi::HandleScope scope(env);
+  Napi::Function callback = Napi::Function::New(env, EmptyCallback);
+  ;
+  int32_t k = 1;
+
+  if (info.Length() < 1 || !info[0].IsObject())
+  {
+    Napi::TypeError::New(env, "options must be an object").ThrowAsJavaScriptException();
+  }
+
+  if (info.Length() > 1 && info[1].IsFunction())
+  {
+    callback = info[1].As<Napi::Function>();
+  }
+
+  Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(info.Env());
+  NodeArgument::NodeArgument nodeArg;
+  NodeArgument::CArgument c_argument;
+
+  try
+  {
+    Napi::Object confObj = info[1].As<Napi::Object>();
+    c_argument = nodeArg.NapiObjectToCArgument(env, confObj);
+  }
+  catch (std::string errorMessage)
+  {
+    Napi::TypeError::New(env, errorMessage.c_str()).ThrowAsJavaScriptException();
+  }
+
+  int count = c_argument.argc;
+  char **argument = c_argument.argv;
+
+  std::vector<std::string> args;
+  args.push_back("-command");
+  args.push_back("quantize");
+
+  for (int j = 0; j < count; j++)
+  {
+    args.push_back(argument[j]);
+  }
+
+  QuantizeWorker *worker = new QuantizeWorker(args, this->wrapper_, deferred, callback);
   worker->Queue();
 
   return worker->deferred_.Promise();
