@@ -1,12 +1,12 @@
 #include "query.h"
 
-Napi::FunctionReference Query::constructor;
+Napi::FunctionReference FasttextQuery::constructor;
 
-Napi::Object Query::Init(Napi::Env env, Napi::Object exports)
+Napi::Object FasttextQuery::Init(Napi::Env env, Napi::Object exports)
 {
   Napi::HandleScope scope(env);
-  Napi::Function func = DefineClass(env, "Query",
-                                    {InstanceMethod("nn", &Query::Nn)});
+  Napi::Function func = DefineClass(env, "FasttextQuery",
+                                    {InstanceMethod("nn", &FasttextQuery::Nn)});
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
@@ -15,7 +15,7 @@ Napi::Object Query::Init(Napi::Env env, Napi::Object exports)
   return exports;
 }
 
-Query::Query(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Query>(info)
+FasttextQuery::FasttextQuery(const Napi::CallbackInfo &info) : Napi::ObjectWrap<FasttextQuery>(info)
 {
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
@@ -29,7 +29,7 @@ Query::Query(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Query>(info)
   this->wrapper_ = new Wrapper(modelFileName);
 }
 
-Napi::Value Query::Nn(const Napi::CallbackInfo &info)
+Napi::Value FasttextQuery::Nn(const Napi::CallbackInfo &info)
 {
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);

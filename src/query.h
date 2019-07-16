@@ -1,21 +1,21 @@
-#ifndef QUERY_H
-#define QUERY_H
+#ifndef FASTTEXT_QUERY_H
+#define FASTTEXT_QUERY_H
 
 #include <napi.h>
 #include "wrapper.h"
 #include "nnWorker.h"
 #include "node-util.h"
 
-class Query : public Napi::ObjectWrap<Query>
+class FasttextQuery : public Napi::ObjectWrap<FasttextQuery>
 {
 public:
   static Napi::Object Init(Napi::Env env, Napi::Object exports);
-  Query(const Napi::CallbackInfo &info);
+  FasttextQuery(const Napi::CallbackInfo &info);
 
   /**
    * Destructor
    */
-  ~Query()
+  ~FasttextQuery()
   {
     delete wrapper_;
   }

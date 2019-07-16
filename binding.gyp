@@ -24,15 +24,14 @@
         "fastText/src/vector.cc",
         "src/node-util.cc",
         "src/node-argument.cc",
-        "src/node-fasttext.cc",
         "src/loadModel.cc",
         "src/train.cc",
         "src/quantize.cc",
-        "src/classifier.h",
         "src/predictWorker.cc",
-        "src/query.cc",
         "src/nnWorker.cc",
         "src/wrapper.cc",
+        "src/classifier.cc",
+        "src/query.cc",
         "src/addon.cc"
       ],
       "defines": [

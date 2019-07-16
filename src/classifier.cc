@@ -1,20 +1,20 @@
-#include "node-fasttext.h"
+#include "classifier.h"
 #include "loadModel.h"
 #include "predictWorker.h"
 #include "train.h"
 #include "quantize.h"
 #include <iostream>
 
-Napi::FunctionReference NodeFasttext::constructor;
+Napi::FunctionReference FasttextClassifier::constructor;
 
-Napi::Object NodeFasttext::Init(Napi::Env env, Napi::Object exports)
+Napi::Object FasttextClassifier::Init(Napi::Env env, Napi::Object exports)
 {
   Napi::HandleScope scope(env);
-  Napi::Function func = DefineClass(env, "Classifier",
-                                    {InstanceMethod("loadModel", &NodeFasttext::LoadModel),
-                                     InstanceMethod("predict", &NodeFasttext::Predict),
-                                     InstanceMethod("train", &NodeFasttext::Train),
-                                     InstanceMethod("quantize", &NodeFasttext::Quantize)});
+  Napi::Function func = DefineClass(env, "FasttextClassifier",
+                                    {InstanceMethod("loadModel", &FasttextClassifier::LoadModel),
+                                     InstanceMethod("predict", &FasttextClassifier::Predict),
+                                     InstanceMethod("train", &FasttextClassifier::Train),
+                                     InstanceMethod("quantize", &FasttextClassifier::Quantize)});
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
@@ -23,7 +23,7 @@ Napi::Object NodeFasttext::Init(Napi::Env env, Napi::Object exports)
   return exports;
 }
 
-NodeFasttext::NodeFasttext(const Napi::CallbackInfo &info) : Napi::ObjectWrap<NodeFasttext>(info)
+FasttextClassifier::FasttextClassifier(const Napi::CallbackInfo &info) : Napi::ObjectWrap<FasttextClassifier>(info)
 {
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
@@ -37,7 +37,7 @@ NodeFasttext::NodeFasttext(const Napi::CallbackInfo &info) : Napi::ObjectWrap<No
   this->wrapper_ = new Wrapper(modelFileName);
 }
 
-Napi::Value NodeFasttext::LoadModel(const Napi::CallbackInfo &info)
+Napi::Value FasttextClassifier::LoadModel(const Napi::CallbackInfo &info)
 {
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
@@ -72,7 +72,7 @@ Napi::Value NodeFasttext::LoadModel(const Napi::CallbackInfo &info)
   return worker->deferred_.Promise();
 }
 
-Napi::Value NodeFasttext::Predict(const Napi::CallbackInfo &info)
+Napi::Value FasttextClassifier::Predict(const Napi::CallbackInfo &info)
 {
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
@@ -104,7 +104,7 @@ Napi::Value NodeFasttext::Predict(const Napi::CallbackInfo &info)
   return worker->deferred_.Promise();
 }
 
-Napi::Value NodeFasttext::Train(const Napi::CallbackInfo &info)
+Napi::Value FasttextClassifier::Train(const Napi::CallbackInfo &info)
 {
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
@@ -177,7 +177,7 @@ Napi::Value NodeFasttext::Train(const Napi::CallbackInfo &info)
   }
 }
 
-Napi::Value NodeFasttext::Quantize(const Napi::CallbackInfo &info)
+Napi::Value FasttextClassifier::Quantize(const Napi::CallbackInfo &info)
 {
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);

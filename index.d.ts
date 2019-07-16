@@ -7,7 +7,7 @@ export declare class Classifier {
 }
 
 export declare class Query {
-  constructor(modelFilename?: string);
+  constructor(modelFilename: string);
   nn(word: string, neighbors: number): Promise<Array<{ label: string; value: number }>>;
 }
 
