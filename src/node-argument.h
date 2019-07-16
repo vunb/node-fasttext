@@ -10,7 +10,6 @@
 #define NODEARGUMENT_NODEARGUMENT_H
 
 #include <napi.h>
-#include <v8.h>
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
@@ -36,9 +35,6 @@ public:
   int AddStringArgument(char ***strings, size_t *count, const char *newStr);
   void PrintArguments(char **strings, size_t count);
   bool isOnlyDouble(const char *str);
-  CArgument ObjectToCArgument(v8::Local<v8::Object> obj);
-  std::vector<std::string> ObjectToArrayString(v8::Local<v8::Object> obj);
-  v8::Local<v8::Object> mapToObject(std::map<std::string, std::string> obj);
   CArgument NapiObjectToCArgument(Napi::Env env, Napi::Object obj);
   Napi::Object mapToNapiObject(Napi::Env env, std::map<std::string, std::string> obj);
 };
