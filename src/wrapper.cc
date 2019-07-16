@@ -119,8 +119,8 @@ std::map<std::string, std::string> Wrapper::loadModel(std::istream &in)
   output_ = std::make_shared<Matrix>();
   qinput_ = std::make_shared<QMatrix>();
   qoutput_ = std::make_shared<QMatrix>();
-  args_->load(in);
 
+  args_->load(in);
   dict_->load(in);
 
   bool quant_input;
