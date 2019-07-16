@@ -63,3 +63,4 @@ data
 pretrained-vectors
 fasttext.node
 test*.js
+package-lock.json
