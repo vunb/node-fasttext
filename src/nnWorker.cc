@@ -1,62 +1,59 @@
+#include "nnWorker.h"
+#include "node-util.h"
 
+void NnWorker::Execute()
+{
+  try
+  {
+    wrapper_->loadModel();
+    wrapper_->precomputeWordVectors();
+    result_ = wrapper_->nn(query_, k_);
+  }
+  catch (std::string errorMessage)
+  {
+    SetError(errorMessage.c_str());
+  }
+  catch (const char *str)
+  {
+    SetError(str);
+  }
+  catch (const std::exception &e)
+  {
+    SetError(e.what());
+  }
+}
 
-// #include <iostream>
-// #include "nnWorker.h"
-// #include <v8.h>
+void NnWorker::OnError(const Napi::Error &e)
+{
+  Napi::HandleScope scope(Env());
+  Napi::String error = Napi::String::New(Env(), e.Message());
+  deferred_.Reject(error);
 
-// void NnWorker::Execute () {
-//     try {
-//         wrapper_->loadModel();
-//         wrapper_->precomputeWordVectors();
-//         result_ = wrapper_->nn(query_, k_);
-//     } catch (std::string errorMessage) {
-//         std::cout << "Exception: " << errorMessage << std::endl;
-//         SetErrorMessage(errorMessage.c_str());
-//     } catch (const char * str) {
-//         std::cout << "Exception: " << str << std::endl;
-//         SetErrorMessage(str);
-//     } catch(const std::exception& e) {
-//         std::cout << "Exception: " << e.what() << std::endl;
-//         SetErrorMessage(e.what());
-//     }
-// }
+  // Call empty function
+  Callback().Call({error});
+}
 
+void NnWorker::OnOK()
+{
+  Napi::Env env = Env();
+  Napi::HandleScope scope(env);
+  Napi::Array result = Napi::Array::New(env, result_.size());
 
-// void NnWorker::HandleErrorCallback () {
-//     Nan::HandleScope scope;
+  for (unsigned int i = 0; i < result_.size(); i++)
+  {
+    Napi::Object obj = Napi::Object::New(env);
 
-//     v8::Local<v8::Value> argv[] = {
-//         Nan::Error(ErrorMessage()),
-//         Nan::Null()
-//     };
+    obj.Set(Napi::String::New(env, "label"), Napi::String::New(env, result_[i].label));
+    obj.Set(Napi::String::New(env, "value"), Napi::Number::New(env, result_[i].value));
 
-//     callback->Call(2, argv);
-// }
+    result.Set(i, obj);
+  }
 
-// void NnWorker::HandleOKCallback () {
-//     Nan::HandleScope scope;
-//     v8::Local<v8::Array> result = Nan::New<v8::Array>(result_.size());
+  deferred_.Resolve(result);
 
-//     for(unsigned int i = 0; i < result_.size(); i++) {
-//         v8::Local<v8::Object> returnObject = Nan::New<v8::Object>();
-
-//         returnObject->Set(
-//             Nan::New<v8::String>("label").ToLocalChecked(),
-//             Nan::New<v8::String>(result_[i].label.c_str()).ToLocalChecked()
-//         );
-
-//         returnObject->Set(
-//             Nan::New<v8::String>("value").ToLocalChecked(),
-//             Nan::New<v8::Number>(result_[i].value)
-//         );
-
-//         result->Set(i, returnObject);
-//     }
-
-//     v8::Local<v8::Value> argv[] = {
-//         Nan::Null(),
-//         result
-//     };
-
-//     callback->Call(2, argv);
-// }
+  // Call empty function
+  if (!Callback().IsEmpty())
+  {
+    Callback().Call({env.Null(), result});
+  }
+}

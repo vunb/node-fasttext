@@ -11,6 +11,7 @@ class NodeFasttext : public Napi::ObjectWrap<NodeFasttext>
 public:
   static Napi::Object Init(Napi::Env env, Napi::Object exports);
   NodeFasttext(const Napi::CallbackInfo &info);
+
   /**
    * Destructor
    */
@@ -27,7 +28,6 @@ private:
   Napi::Value Train(const Napi::CallbackInfo &info);
   Napi::Value Quantize(const Napi::CallbackInfo &info);
 
-  double value_;
   Wrapper *wrapper_;
 };
 

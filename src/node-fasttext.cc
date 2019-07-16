@@ -10,7 +10,6 @@ Napi::FunctionReference NodeFasttext::constructor;
 Napi::Object NodeFasttext::Init(Napi::Env env, Napi::Object exports)
 {
   Napi::HandleScope scope(env);
-
   Napi::Function func = DefineClass(env, "Classifier",
                                     {InstanceMethod("loadModel", &NodeFasttext::LoadModel),
                                      InstanceMethod("predict", &NodeFasttext::Predict),

@@ -30,7 +30,7 @@
         "src/quantize.cc",
         "src/classifier.h",
         "src/predictWorker.cc",
-        "src/query.h",
+        "src/query.cc",
         "src/nnWorker.cc",
         "src/wrapper.cc",
         "src/addon.cc"

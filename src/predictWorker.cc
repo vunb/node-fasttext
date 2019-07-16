@@ -33,9 +33,9 @@ void PredictWorker::OnError(const Napi::Error &e)
 
 void PredictWorker::OnOK()
 {
-  Napi::HandleScope scope(Env());
-  Napi::Array result = Napi::Array::New(Env(), result_.size());
   Napi::Env env = Env();
+  Napi::HandleScope scope(env);
+  Napi::Array result = Napi::Array::New(env, result_.size());
 
   for (unsigned int i = 0; i < result_.size(); i++)
   {
@@ -52,6 +52,6 @@ void PredictWorker::OnOK()
   // Call empty function
   if (!Callback().IsEmpty())
   {
-    Callback().Call({Env().Null(), result});
+    Callback().Call({env.Null(), result});
   }
 }
