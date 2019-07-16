@@ -59,11 +59,20 @@
           [ "OS=='mac'", {
               "cflags+": [ "-stdlib=libc++" ],
               "xcode_settings": {
-                  "OTHER_CPLUSPLUSFLAGS" : [ "-std=c++11", "-stdlib=libc++", "-pthread" ],
-                  "OTHER_LDFLAGS": [ "-stdlib=libc++" ],
+                  "OTHER_CPLUSPLUSFLAGS" : [ 
+                    "-std=c++0x", 
+                    "-stdlib=libc++", 
+                    "-march=native",
+                    "-O3",
+                    "-funroll-loops",
+                    "-c",
+                    "-pthread" ],
+                  "OTHER_LDFLAGS": [ 
+                    "-stdlib=libc++"
+                  ],
                   "GCC_ENABLE_CPP_EXCEPTIONS": "YES",
                   "MACOSX_DEPLOYMENT_TARGET": "10.7",
-                  "CLANG_CXX_LANGUAGE_STANDARD":"c++11",
+                  "CLANG_CXX_LANGUAGE_STANDARD":"c++0x",
                   "CLANG_CXX_LIBRARY": "libc++"
               },
           }],
