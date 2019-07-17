@@ -12,7 +12,7 @@ export declare class Query {
 }
 
 export interface Options {
-  [key: string]: string;
+  [key: string]: any;
   // The following arguments are mandatory
   input: string;              // training file path
   output: string;             // output file path
