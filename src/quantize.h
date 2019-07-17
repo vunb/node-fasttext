@@ -1,26 +1,35 @@
 #ifndef QUANTIZE_H
 #define QUANTIZE_H
 
-#include <nan.h>
+#include <napi.h>
 #include "wrapper.h"
 
-class Quantize : public Nan::AsyncWorker {
-  public:
-    Quantize(
-        const std::vector<std::string> args,
-        Wrapper *wrapper
-    ): Nan::AsyncWorker(new Nan::Callback()), args_(args), wrapper_(wrapper), result_(){};
+class QuantizeWorker : public Napi::AsyncWorker
+{
+public:
+  QuantizeWorker(
+      const std::vector<std::string> args,
+      Wrapper *wrapper,
+      Napi::Promise::Deferred deferred,
+      Napi::Function &callback)
+      : Napi::AsyncWorker(callback),
+        deferred_(deferred),
+        args_(args),
+        wrapper_(wrapper),
+        result_(){};
 
-    ~Quantize(){};
+  ~QuantizeWorker(){};
 
-    void Execute();
-    void HandleOKCallback();
-    void HandleErrorCallback();
+  Napi::Promise::Deferred deferred_;
 
-  private:
-    const std::vector<std::string> args_;
-    Wrapper *wrapper_;
-    std::map<std::string, std::string> result_;
+  void Execute();
+  void OnOK();
+  void OnError(const Napi::Error &e);
+
+private:
+  const std::vector<std::string> args_;
+  Wrapper *wrapper_;
+  std::map<std::string, std::string> result_;
 };
 
 #endif

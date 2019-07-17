@@ -22,18 +22,24 @@
         "fastText/src/utils.cc",
         "fastText/src/vector.h",
         "fastText/src/vector.cc",
+        "src/node-util.cc",
         "src/node-argument.cc",
         "src/loadModel.cc",
         "src/train.cc",
         "src/quantize.cc",
-        "src/classifier.h",
-        "src/classifierWorker.cc",
-        "src/query.h",
+        "src/predictWorker.cc",
         "src/nnWorker.cc",
         "src/wrapper.cc",
+        "src/classifier.cc",
+        "src/query.cc",
         "src/addon.cc"
       ],
-      "include_dirs": ["<!(node -e \"require('nan')\")"],
+      "defines": [
+        "NAPI_VERSION=<(napi_build_version)",
+      ],
+      "include_dirs": [
+        "<!@(node -p \"require('node-addon-api').include\")"
+      ],
       "cflags": [
           "-std=c++11",
           "-pthread",

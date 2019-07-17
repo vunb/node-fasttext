@@ -1,27 +1,30 @@
 #ifndef LOADMODEL_H
 #define LOADMODEL_H
 
-#include <nan.h>
+#include <napi.h>
 #include "wrapper.h"
 
-class LoadModel : public Nan::AsyncWorker {
-	public:
-		LoadModel(std::string filename , Wrapper *wrapper) : 
-			Nan::AsyncWorker(new Nan::Callback()) , 
-			filename(filename),
-			result_(),
-			wrapper_(wrapper) {};
+class LoadModelWorker : public Napi::AsyncWorker
+{
+public:
+  LoadModelWorker(std::string filename, Wrapper *wrapper, Napi::Promise::Deferred deferred, Napi::Function &callback)
+      : Napi::AsyncWorker(callback),
+        filename(filename),
+        result_(),
+        wrapper_(wrapper),
+        deferred_(deferred){};
 
-		~LoadModel() {};
+  ~LoadModelWorker(){};
 
-		void Execute ();
-        void HandleOKCallback ();
-        void HandleErrorCallback ();
+  Napi::Promise::Deferred deferred_;
+  void Execute();
+  void OnOK();
+  void OnError();
 
-    private: 
-    	std::string filename;
-    	std::map<std::string, std::string> result_;
-    	Wrapper *wrapper_;
+private:
+  std::string filename;
+  std::map<std::string, std::string> result_;
+  Wrapper *wrapper_;
 };
 
 #endif

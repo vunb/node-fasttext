@@ -1,27 +1,31 @@
-#ifndef TRAIN_H
-#define TRAIN_H
+#ifndef TRAIN_WORKER_H
+#define TRAIN_WORKER_H
 
-#include <nan.h>
+#include <napi.h>
 #include "wrapper.h"
 
-class Train : public Nan::AsyncWorker {
-	public:
-		Train(const std::vector<std::string> args, Wrapper *wrapper) : 
-			Nan::AsyncWorker(new Nan::Callback()) , 
-			args_(args),
-			wrapper_(wrapper),
-			result_() {};
+class TrainWorker : public Napi::AsyncWorker
+{
+public:
+  TrainWorker(const std::vector<std::string> args, Wrapper *wrapper, Napi::Promise::Deferred deferred, Napi::Function &callback)
+      : Napi::AsyncWorker(callback),
+        args_(args),
+        wrapper_(wrapper),
+        deferred_(deferred),
+        result_(){};
 
-		~Train() {};
+  ~TrainWorker(){};
 
-		void Execute ();
-        void HandleOKCallback ();
-        void HandleErrorCallback ();
+  Napi::Promise::Deferred deferred_;
 
-    private: 
-    	const std::vector<std::string> args_;
-    	Wrapper *wrapper_;
-    	std::map<std::string, std::string> result_;
+  void Execute();
+  void OnOK();
+  void OnError(const Napi::Error &e);
+
+private:
+  const std::vector<std::string> args_;
+  Wrapper *wrapper_;
+  std::map<std::string, std::string> result_;
 };
 
 #endif

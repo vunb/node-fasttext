@@ -1,27 +1,27 @@
 
-#ifndef NN_WORKER_H
-#define NN_WORKER_H
+#ifndef PREDICT_WORKER_H
+#define PREDICT_WORKER_H
 
 #include <napi.h>
 #include "wrapper.h"
 
-class NnWorker : public Napi::AsyncWorker
+class PredictWorker : public Napi::AsyncWorker
 {
 public:
-  NnWorker(
-      std::string query,
+  PredictWorker(
+      std::string sentence,
       int32_t k,
       Wrapper *wrapper,
       Napi::Promise::Deferred deferred,
       Napi::Function &callback)
       : Napi::AsyncWorker(callback),
         deferred_(deferred),
-        query_(query),
-        k_(k),
+        sentence_(sentence),
         wrapper_(wrapper),
-        result_(){};
+        result_(),
+        k_(k){};
 
-  ~NnWorker(){};
+  ~PredictWorker(){};
 
   Napi::Promise::Deferred deferred_;
 
@@ -30,10 +30,10 @@ public:
   void OnError(const Napi::Error &e);
 
 private:
-  std::string query_;
-  int32_t k_;
+  std::string sentence_;
   Wrapper *wrapper_;
   std::vector<PredictResult> result_;
+  int32_t k_;
 };
 
 #endif

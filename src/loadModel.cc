@@ -1,29 +1,37 @@
 #include "loadModel.h"
 #include "node-argument.h"
 
-
-void LoadModel::Execute () {
-	try {
-        result_ = wrapper_->loadModel( filename );
-    } catch (std::string errorMessage) {
-        SetErrorMessage(errorMessage.c_str());
-    }
+void LoadModelWorker::Execute()
+{
+  try
+  {
+    result_ = wrapper_->loadModel(filename);
+  }
+  catch (std::string errorMessage)
+  {
+    SetError(errorMessage.c_str());
+  }
 }
 
-void LoadModel::HandleErrorCallback () {
-    Nan::HandleScope scope;
-    auto res = GetFromPersistent("key").As<v8::Promise::Resolver>();
-    res->Reject( Nan::GetCurrentContext() , Nan::Error(ErrorMessage()));
-    v8::Isolate::GetCurrent()->RunMicrotasks();
+void LoadModelWorker::OnOK()
+{
+  NodeArgument::NodeArgument nodeArg;
+  Napi::Object result = nodeArg.mapToNapiObject(Env(), result_);
+
+  deferred_.Resolve(result);
+
+  // Call empty function
+  if (!Callback().IsEmpty())
+  {
+    Callback().Call({Env().Null(), result});
+  }
 }
 
-void LoadModel::HandleOKCallback () {
-	
-    Nan::HandleScope scope;
-    NodeArgument::NodeArgument nodeArg;
-    v8::Local<v8::Object> result = nodeArg.mapToObject( result_ );
+void LoadModelWorker::OnError()
+{
+  Napi::HandleScope scope(Env());
+  deferred_.Reject(Napi::String::New(Env(), "Can't load model file!"));
 
-    auto res = GetFromPersistent("key").As<v8::Promise::Resolver>();
-    res->Resolve( Nan::GetCurrentContext() , result);
-    v8::Isolate::GetCurrent()->RunMicrotasks();
+  // Call empty function
+  Callback().Call({});
 }

@@ -1,11 +1,13 @@
 
-#include <nan.h>
-#include "classifier.h"   // NOLINT(build/include)
-#include "query.h"        // NOLINT(build/include)
+#include <napi.h>
+#include "classifier.h"
+#include "query.h"
 
-NAN_MODULE_INIT(Init) {
-  Classifier::Init(target);
-  Query::Init(target);
+Napi::Object Initialize(Napi::Env env, Napi::Object exports)
+{
+  FasttextClassifier::Init(env, exports);
+  FasttextQuery::Init(env, exports);
+  return exports;
 }
 
-NODE_MODULE(fastTextAddon, Init)
+NODE_API_MODULE(addon, Initialize)

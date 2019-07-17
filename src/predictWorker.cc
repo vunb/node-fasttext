@@ -1,13 +1,11 @@
-#include "nnWorker.h"
-#include "node-util.h"
+#include "predictWorker.h"
 
-void NnWorker::Execute()
+void PredictWorker::Execute()
 {
   try
   {
     wrapper_->loadModel();
-    wrapper_->precomputeWordVectors();
-    result_ = wrapper_->nn(query_, k_);
+    result_ = wrapper_->predict(sentence_, k_);
   }
   catch (std::string errorMessage)
   {
@@ -23,7 +21,7 @@ void NnWorker::Execute()
   }
 }
 
-void NnWorker::OnError(const Napi::Error &e)
+void PredictWorker::OnError(const Napi::Error &e)
 {
   Napi::HandleScope scope(Env());
   Napi::String error = Napi::String::New(Env(), e.Message());
@@ -33,7 +31,7 @@ void NnWorker::OnError(const Napi::Error &e)
   Callback().Call({error});
 }
 
-void NnWorker::OnOK()
+void PredictWorker::OnOK()
 {
   Napi::Env env = Env();
   Napi::HandleScope scope(env);

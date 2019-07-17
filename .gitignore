@@ -58,9 +58,9 @@ typings/
 .env
 
 .vscode
-build
-build1*
+build*
 data
 pretrained-vectors
 fasttext.node
 test*.js
+package-lock.json

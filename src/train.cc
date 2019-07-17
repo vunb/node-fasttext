@@ -1,36 +1,48 @@
-#include "node-argument.h"
 #include "train.h"
+#include "node-argument.h"
 
-
-void Train::Execute () {
-	try {
-        result_ = wrapper_->train( args_ );
-    } catch (std::string errorMessage) {
-        SetErrorMessage(errorMessage.c_str());
-    } catch (const char * str) {
-        std::cout << "Exception: " << str << std::endl;
-        SetErrorMessage(str);
-    } catch(const std::exception& e) {
-	    // Handle exception
-        std::cout << "Exception: " << e.what() << std::endl;
-        SetErrorMessage(e.what());
-    }
+void TrainWorker::Execute()
+{
+  try
+  {
+    result_ = wrapper_->train(args_);
+  }
+  catch (std::string errorMessage)
+  {
+    SetError(errorMessage.c_str());
+  }
+  catch (const char *str)
+  {
+    SetError(str);
+  }
+  catch (const std::exception &e)
+  {
+    SetError(e.what());
+  }
 }
 
+void TrainWorker::OnError(const Napi::Error &e)
+{
+  Napi::HandleScope scope(Env());
+  Napi::String error = Napi::String::New(Env(), e.Message());
+  deferred_.Reject(error);
 
-void Train::HandleErrorCallback () {
-    Nan::HandleScope scope;
-    auto res =  GetFromPersistent("key").As<v8::Promise::Resolver>();
-    res->Reject( Nan::GetCurrentContext() , Nan::Error(ErrorMessage()));
-    v8::Isolate::GetCurrent()->RunMicrotasks();
+  // Call empty function
+  Callback().Call({error});
 }
 
-void Train::HandleOKCallback () {
-    Nan::HandleScope scope;
-    
-    NodeArgument::NodeArgument nodeArg;
-    v8::Local<v8::Object> result = nodeArg.mapToObject( result_ );
-    auto res = GetFromPersistent("key").As<v8::Promise::Resolver>();
-    res->Resolve(result);
-    v8::Isolate::GetCurrent()->RunMicrotasks();
+void TrainWorker::OnOK()
+{
+  Napi::Env env = Env();
+  Napi::HandleScope scope(env);
+
+  NodeArgument::NodeArgument nodeArg;
+  Napi::Object result = nodeArg.mapToNapiObject(env, result_);
+  deferred_.Resolve(result);
+
+  // Call empty function
+  if (!Callback().IsEmpty())
+  {
+    Callback().Call({env.Null(), result});
+  }
 }
